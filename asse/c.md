@@ -1,4 +1,4 @@
-
+```c
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -17,8 +17,8 @@ int main(void)
      x=add(y,z);
      return 0;
 }
-
-
+```
+```c
         .file   "test.c" 
         .text 
 .globl add 
@@ -60,10 +60,10 @@ main:
 ~                                                           
 	
 
+```
 
 
-
-
+```c
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -76,9 +76,9 @@ int main(void)
      return 0;
 }
 
+```
 
-
-
+```c
       .file   "test.c"
         .text
 .globl main
@@ -98,6 +98,7 @@ main:
         .ident  "GCC: (GNU) 4.4.7 20120313 (Red Hat 4.4.7-4)"
         .section        .note.GNU-stack,"",@progbits
 ~       
+```
 
 
 
@@ -121,11 +122,7 @@ main:
 
 
 
-
-
-
-
-
+```c
 
 void main()  
   
@@ -147,7 +144,8 @@ void main()
             printf("The value of ***pb is   %8d./n" , ***pb);  
 }      
 
-
+```
+```c
 
 .file   "test.c"
 .section        .rodata
@@ -257,4 +255,6 @@ main:
         ret
         .size   main, .-main
         .ident  "GCC: (GNU) 4.4.7 20120313 (Red Hat 4.4.7-4)"
-        .section        .note.GNU-stack,"",@progbits                                              
+        .section        .note.GNU-stack,"",@progbits  
+
+```                                            

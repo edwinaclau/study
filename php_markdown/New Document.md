@@ -1,0 +1,3 @@
+redisObject
+
+Redis对象
