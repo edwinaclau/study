@@ -1,0 +1,29 @@
+typedef struct {  
+    PyObject_HEAD   
+    long ob_ival;  
+} PyIntObject; 
+引入整数缓冲池的概念 和 java 的一样
+
+小整数的范围为[-5,257)
+
+所有如果同一个变量引用是  同一个对象
+
+举个例子
+
+   h = 98
+   b = 98
+h 和 b 是一样，因为都是一个对象，内存池
+
+每个PyIntBlock有N个PyIntObject对象
+
+
+struct _intblock {  
+    struct _intblock *next;  
+    PyIntObject objects[N_INTOBJECTS];  
+};  
+typedef struct _intblock PyIntBlock;  
+  
+static PyIntBlock *block_list = NULL;  
+static PyIntObject *free_list = NULL;  
+
+然后就是链表东西，没其他东西说了

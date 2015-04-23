@@ -1,0 +1,125 @@
+Python 程序的执行过程
+
+
+.py文件中的语句并没有被转换一系列的机器指令,,
+Python本质和java 和 C#一样，
+
+虚拟机和字节码
+
+
+
+Python 解释器(interpreter)
+
+Python 的解释器完成
+
+首先对文件中的Python源代码编译，编译器结果是产生一组Python的byte code（字节码)
+最后将编译结果给回Python的(Virtual machine)
+
+	由虚拟机按照顺序一条一条地执行字节码,编译结果交给VM
+	由VM按照一条一条字节码，从而完成Python程序的执行动作
+
+	program.py--->python25.dll---->program.pyc---->python25.dll---->结果
+
+	Python VM距离真实机器更远
+
+
+
+	Python 编译结果是.pyc，实际并不正确
+
+
+	typedef struct {
+	   PyObject_HEAD
+
+	} PyCodeObject;
+
+
+Python编译器对于一个code block
+
+如何确定多少代码算是一个code block
+
+
+当一个名字空间
+
+
+Python 名字空间，比如说a,是PyIntObject对象
+而另外名字空间它是PyStringObject对象
+
+[名字空间]形成一个名字空间链
+
+
+PyCodeObject对象包含每一个Code block所有Python源代码经过编译后得到byte
+code序列
+
+
+Pyhon 的import 机制
+
+
+co_argcount
+co_nlocals
+co_stacksize
+co_flags
+co_code
+co_consts
+co_names
+co_varnames
+co_freevars
+co_cellvars
+co_filename
+co_name
+
+
+
+
+
+
+Python源码中的PyFrameObject
+
+
+typedef struct _frame {
+   PyObject_VAR_HEAD
+   struct _frame *f_back;
+   PycodeObject *f_code;
+   PyObject *f_builtins;
+   PyObject *f_globals;
+   PyOjbect *f_locals;
+   PyOjbect **f_valuestack;
+   PyOjbect **f_stacktop;
+   ...
+   int f_lasti;
+   int f_lineno;
+
+}
+
+
+PyFrameObject----PyFrameObject------PyFrameObject
+
+每一个.py文件中包含了多行Python中的表
+
+LGB规则
+
+
+
+.pyc文件是什么？
+
+Python 源码编译结果就是PyCodeObject
+
+
+pyc_magic
+mtime
+
+TYPE_CODE
+co_argscount
+co_nlocals
+co_stacksize
+co_flags
+co_code
+co_consts
+co_names
+co_varnames
+co_freevars
+co_filename
+co_cellvars
+co_firstlineno
+co_lnotab
+
+

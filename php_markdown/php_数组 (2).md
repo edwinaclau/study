@@ -1,12 +1,12 @@
 
 PHP之所以发现这么迅速,有很大原因是因为数组数据非常好处理,而且它可以存储其他类型的数据
 数组的值存储在zvalue_value.ht字段中,ht是一个HashTable的数据
-
-
+有关于HashTable的知识请移步 >> HASH表和变量
+我们来详细说一下数组
 PHP里面所有的数据都离不开zval和HashTable,
 一个PHP很简单的数组初始化,
 在C语言里面实现的却没有那么简单.
-
+经过简单分析,找到数组的初始化的opcode
 在Zend/zend_vm_execute.h文件中
 
 ```c
@@ -81,7 +81,14 @@ PHP_FUNCTION(confirm_siren_compiled)
         ZEND_SET_SYMBOL(EG(active_symbol_table),"siren",value);
 }
 ```
-
+执行PHP 结果如下
+s# /usr/local/php53/bin/php test.php
+array(1) {
+["a"]=>
+string(15) “this is a value”
+}
+zend_hash_update只是给数组添加元素的一种方法 ..
+还有很多API可以用,
 
 
 函数                                                                 说明
