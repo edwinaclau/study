@@ -198,3 +198,39 @@ latency throughtput
 
 不推荐使用读写所是原因往往
 写操作会发生阻塞
+
+master 最主要是性能指标不是throughtput,而是latecy尽快相应
+事件发生，几乎不会出现跑满CPU IO
+
+master 监控的优先级级别 有区分,
+
+master 和 各个 slave 之间 用一个TCP连接
+
+master 要异步往本地硬盘写log,log有自己线程
+
+master 服务于多个clients
+
+master monitor用于广播集群状态
+
+master 一共开10个线程
+
+
+多线程 有 3 类
+
+I/O
+
+
+计算机线程
+
+
+第三方库线程
+
+
+
+
+多线程能提高并发？
+
+
+
+
+多线程吞吐量
