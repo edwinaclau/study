@@ -1,0 +1,15 @@
+Python内存回收的基石是引用计数，“当一个对象的引用被创建或复制时，对象的引用技术加1；当一个对象的引用被销毁时，对象的引用技术减1”，如果对象的引用计数减少为0，将对象的所占用的内存释放。
+引用计数的缺点是对循环引用无能为力，优点是将内存释放的操作时机离散化，不会引起瞬间的大波动。
+Python采用Mark-Sweep算法来解决循环引用问题
+Mark-Sweep过程
+** 寻找root object集合，root object指全局引用和函数栈上的引用
+** 从root object出发，通过其每一个引用到达的所有对象都标记为reachable（垃圾检测）
+** 将所有非reachable的对象删除（垃圾回收）
+
+垃圾检测只需要跟踪可以保有其他对象引用的container对象（例如list,dict,class,instance等）即可。
+
+Python创建container对象时，会在前面加入PyGC_Head。通过PyGC_Head串起来的双向链表把所有container对象串起来。
+Python的GC有分代机制，分3代。最年轻代到最老代默认个数是700/10/10，当某代里的对象数超过阈值，将会引发一次GC动作。某个对象在一次GC中存活的话，就把它移到更老的一代。
+对象的引用计数存在PyGC_Head的ob_refcnt，GC时会使用此值的副本，PyGC_Head的gc.gc_refs
+在垃圾检测过程中，会先试探地把所有对象的引用计数减1。遇到一个引用计数为0的对象，先将其标记为GC_TENTATIVELY_UNREACHABLE。如果之后某个对象的遍历过程中遇到这个临时标记的对象，证明它还是有引用的，将其移回reachable列表并且把引用计数设为1。
+垃圾检测完成后，所有在unreachable链表的对象都可以释放了，除了那些定义了del方法的对象。之前一篇blog也提到，Python不会自动回收这些对象。

@@ -1,3 +1,5 @@
+epoll是事件非阻塞，而不是IO非阻塞,这是大家的一个误区，有问题看源码
+
 
 epoll是新建一个文件
 1. int epoll_create(int size);
