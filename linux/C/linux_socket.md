@@ -16,3 +16,4 @@ SOCK_DGRAM   数据报套接字
 
 SOCK_SOCK_RAW 原始套接字
 
+socket(AF_INET, SOCKET_

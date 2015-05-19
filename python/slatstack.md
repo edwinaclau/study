@@ -1,5 +1,36 @@
 Slatstack 
 
+
+
+base:
+  '*':
+    - ldap-client
+    - networking
+    - salt.minion
+  'salt-master*':
+    - salt.master
+  '^(memcache|web).(qa|prod).loc$':
+    - match: pcre
+    - nagios.client
+    - apache.server
+  'os:Ubuntu':
+    - match: grain
+    - repos.ubuntu
+  'os:(RedHat|CentOS)':
+    - match: grain_pcre
+    - repos.epel
+  'foo,bar,baz':
+    - match: list
+    - database
+  'somekey:abc':
+    - match: pillar
+    - xyz
+  'nag1* or G@role:monitoring':
+    - match: compound
+    - nagios.server
+
+
+
 file_roots:
   base:
     - /srv/salt/
@@ -247,3 +278,20 @@ pillar 是 Salt 非常重要的一个组件，它用于给特定的 minion 定�
 
 
 saltstack 自带grains 可以去收集一些信息  但是默认的信息资源有限 当然你也可以去自定义采集grains信息  但是grains信息有个缺点就是 他不是实时的  你定义的这些信息 它会在你重启minion或者你在master去同步grains的时候 会去采集一次 等采集完了这个值 不会发生变化 除非你再去重复上面2个动作 或者他的值 一直不变  。
+
+
+
+
+grains  这个跟puppet的facter一样 负责采集客户端一些基本信息
+
+可以在客户端自定义 然后自动汇报上来 也可以从服务器端定义然后推下去 采集完后 再汇报上来
+
+
+
+
+
+很容易编写salt runners，它工作起来就和salt模块一样，不同之处在于salt runners在master上运行。一个runner是一个python模块，每个python模块中的共有函数都是一个runner，他可以通过salt-run命令执行。 
+
+
+
+ grains的api  没啥东西   
