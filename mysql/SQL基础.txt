@@ -1,0 +1,21 @@
+DDL(data Definition Languages) 语句
+
+简单来说就是   数据库内部的对象 进行创建、删除、修改等操作语言
+
+ mysql -uroot -p
+ 命令结束符 ;  或者 \g
+
+
+DDL 对数据库内部对象进行创建 修改 删除 等操作
+
+DML(Data Control Languages) 语句
+
+DML 对数据库表记录才做，表记录的插入 （insert) 更新(update) 删除(delete)  查询(select)
+
+DCL（Data Control Languages)语句
+
+
+   DCL语句 DBA 管理系统的对象权限使用
+
+
+   例如grant selct ,insert on 

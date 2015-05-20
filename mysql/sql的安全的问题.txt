@@ -1,0 +1,32 @@
+CREATE TABLE user (
+     userid int(11)		 NOT NULL auto_increment;
+	 username varchar(20) NOT NULL default '';
+	 password varchar(20) NOT NULL default '';
+	 PRIMARY KEY (userid)
+) TYPE = MyISAM AUTO_INCREMENT=3;
+
+
+user.php?username=angel or 1=1
+
+user.php?username=angel'/*
+						 
+
+SQL语句中，/* 或者 # 将后面的语句注释掉
+
+应用开发可以采取应对措施
+
+单引号被 正常转义，导致 or 1= 1 作为 username 出现
+
+
+应用转换函数
+
+mysql_real_escape_string
+
+escape quote
+
+自己定义函数
+
+
+例如正则
+
+或可以过滤他们的十六进制的表示

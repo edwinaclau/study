@@ -1,0 +1,52 @@
+忘记mysql密码
+
+kill '/cat/xxxmysql/hostname.pid'
+
+
+
+(2) --skip-grant-tables 选项来重启MySql服务
+
+
+(3) 用空密码的root用户连接到MySql
+
+set password = password('123');
+
+update user
+
+
+flush privileges;
+
+
+mysql -uroot
+
+myisamchk -r tablename
+
+
+方法二: 使用SQL命令
+
+CHECK TABLE 
+
+
+
+
+
+mysql.sock不见了如何连接数据库
+
+unix
+mysql -uroot
+TCP
+mysql --protocol=TCP -uroot -p33307 -hlocalhost
+
+
+同一台服务器多个MySQL数据库实例
+
+export MYSQL_NAME =/home/mysql1/mysql
+groupadd mysql
+useradd -g mysql mysql1
+cd /home/mysql1
+
+tar -xzvf /home/mysql1/xxx.tar.gz
+
+
+
+

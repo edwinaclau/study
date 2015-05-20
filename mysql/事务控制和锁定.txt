@@ -1,0 +1,123 @@
+ 事务控制 和 锁定语句
+
+ LOCK TABLE UNLOCK
+
+
+
+  锁定用于当前线程的表。如果表被其他线程锁定，则当前线程会被等待
+
+  LOCK TABLES
+     tbl_name [AS alias] {READ_ [LOCAL]} 
+	 tbl)name [AS alias] {LOCAL}
+
+  UNLOCK TABLES
+      
+
+
+  film_text表获得 read 锁的情况
+
+  session1 和 session2 两个同时打开的session
+
+  表格中的每一行同一时刻两个session 的运行情况，
+
+
+  lock table film_text read;
+
+  select film_id, title from film_text where film_id = 1001;
+
+  其他session 都可以查询该表
+
+  update film_text set title = 'test' where film_id = 1001;
+
+  unlock tables;
+
+  Session 获得锁 
+    update film_text set title = 'test' where film_id = 1001;
+
+
+
+
+	事务控制 
+
+	   MySql( Autocommit ) 需要通过明确的 Commit 和 Rollback 来提交和回滚
+
+	   START TRANSACTION 或 BEGIN 语句可以开始一项新的事务
+
+	   COMMIT 和 ROLLBACK 用来提交或者回滚事务
+
+
+	   CHAIN 和 RELEASE 子句是分别用来定义在事务提交 或者 回滚之后的操作
+
+	   CHAIN会立即启动一个新的事物，并且和刚才的事物具有 相同的隔离级别，RELEASE 则会断开和 客户端连接
+
+	   SET AUTOCOMMIT 可以修改当前 修改当前连接的提交方式
+
+	   SET AUTO-COMMIT=0
+
+
+	   select * from actor where actor_id = 201;
+
+	   select * from actor where actor_id = 201;
+
+
+	   start transcation;
+	   启动一个事务，插入记录
+
+	   insert into actor (actor_id, first_name, last_name);
+       查询为空
+	   select * from actor where actor where actor_id = 20
+
+
+	   commit;
+
+       OK，查到 
+        select * from actor where actor where actor_id = 20
+
+
+
+
+
+     insert into actor
+	 values(202,'lisa', 'lan')
+
+
+	 从actor 表中查询到session1 刚才插入的数据
+	 select actor_id, last_name from actor where actor_id (201,202);
+
+	 start transaction;
+
+	 insert into actor(actor_id, first_name, last_name)
+	values(203,'Lisa', 'TT');
+
+
+	start transaction;
+
+	insert 一条记录      id 203
+
+	commit and chain
+
+	此时会自动开启新的事务
+
+	insert 插入一条记录  id 204
+
+
+
+	session1刚才插入的记录无法看到  只看到 203
+
+	select 
+
+
+	再commit
+
+	session1 就可以看到 204
+
+
+
+
+
+     select * from actor where actor_id = 201;
+
+
+
+
+

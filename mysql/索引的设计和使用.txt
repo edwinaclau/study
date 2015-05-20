@@ -1,0 +1,32 @@
+MyISAM 和 InnoDB
+
+   create index cityname on city
+
+   explain select  from city where city = 'af' \G
+
+   select_type SIMPLE
+
+   table       city
+
+
+   type        ref
+
+
+   possible_keys  cityname
+
+   key            cityname
+
+   ken_len        32
+   ref            const
+   rows           1
+   Extra:         USING where
+
+
+
+   BTREE 索引 与 HASH 索引
+
+   explain SELECT * FROM city WHERE country_id > 1 and country_id < 10 \G
+
+    
+
+

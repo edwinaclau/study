@@ -1,0 +1,133 @@
+create table t(d date, t time, dt datetime);
+
+Field   Type   Null  Key   Default    Extra
+d       date   yes          NULL      
+t       time   yes          NULL
+
+dt      datetime yes        NULL
+
+
+
+DATETIME  0000-00-00 00:00:00
+DATE      0000-00-00
+TIMESTAMP 000000000000
+TIME      00:00:00
+YEAR      0000
+
+create table (t date, t time, dt datetime);
+
+desc t;
+
+
+
+
+
+
+
+
+
+
+
+
+字符串类型
+
+  CHAR(M)
+  VARCHAR(M) 
+  TINYBLOB
+  BLOB
+  MEDIUBLOB
+  TINYTEXT
+  MEDUT
+  LONGTEXT
+  BINARY(M)
+
+
+CHAR  VARCHAR
+
+CHAR 长度是固定为创建表的声明长度
+
+VARCHAR 可变长字符串 0~255
+
+CREATE TABLE VC(v VARCHAR(4), c CHAR(4
+			))
+
+
+
+BINARY   和 VARBINARY 类型
+
+
+
+
+
+ENUM类型
+
+枚举类型
+
+
+INSERT INTO T VALUES('M'),('1'),('f'),(NULL);
+
+
+
+
+
+选择合适的数据类型
+
+值                 CHAR（4）    存储要求     VARCHAR(4)    存储要求
+
+""                 ' '          4个字节      "              1个字节
+
+'ab'               'ab '        4个字节      'ab '          3个字节
+
+
+'abcd'             'abcd'       4个字节      'abcd'         5个字节
+
+
+'abcdefgh'         'abcd'       4个字节       'abcd'        5个字节
+
+
+TEXT BLOB
+
+
+
+create table t (id varchar(100), context text)
+
+du -sh t.*;
+
+
+
+
+浮点数与 定点数
+
+create table t (f float( 8 ,1));
+
+1.23456 插到  float(8,1) 该值截断，并保存1.2
+
+desc t;
+
+
+
+
+CREATE TABLE test(c1 )
+
+
+
+show character set;
+
+desc information_schema.character_sets;
+
+SHOW COLLATION LIKE %gbk%;
+
+
+服务器字符集和校对规则
+
+mysqld --character-set-server=gbk
+
+
+show variables like %collation_server%;
+
+
+
+show create table z1 \G;
+
+
+mysqldump -uroot -p --default-character-set = gbk - d databasename > create

@@ -1,0 +1,26 @@
+mysqldump [options] db_name [tables]
+
+
+
+mysqldump [options] --database DB1 [DB2 DB3]
+
+
+
+mysqldump [options] --all-database
+
+
+mysqldmp --help
+
+
+ l参数是给所有表加锁,-F是新的日志文件
+mysqldump -uroot -p -l -F > test.dmp
+
+
+mysqlbinlog localhostbin | mysql -u root -p test
+
+mysqlbinlog --stop-date="" /var/log/mysql/bin/bin.1234 | mysql -uroot -ppasswd
+
+
+mysqlhotcopy
+
+

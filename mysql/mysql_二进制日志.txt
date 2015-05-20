@@ -1,0 +1,81 @@
+mysqlbinlog localhost-bin.00007
+
+用的是STATEMENT
+
+
+用的row ，解析后是一无法解析字符
+
+
+
+OLTP
+
+清除日志
+
+
+RESET MASTER 删除所有BINLOG日志
+
+PURGE MASTER LOGS TO ’mysql-bin'
+
+
+PURGE master logs before '';
+
+--expire_logs_days = 过期天数
+
+在my.cnf 加入 expire_logs_day = 4
+
+
+mysqladmin flush-log
+
+
+--binlog_do-db=db_name 记录哪个db需要记录二进制
+
+
+--binlog_ignore=db=db_name 记录哪个当前db不需要二进制
+
+
+--innodb-safe-binlog 经常和 -sync-binlog =n
+
+
+
+--log-output[=value]
+
+
+
+
+慢查询日志
+
+（1_ show variables like %long%;
+
+set long_query_time=2
+
+more localhost-show.log
+
+
+set global long_query_time = 0.01;
+
+show variables lie
+
+
+
+
+
+
+
+
+
+
+
+
+mysqla 解析查询日志和慢查询日志
+
+
+mysqlsla --log-type slow LOG
+
+mysqlsla --log-type general LOG
+
+
+mysqlbinlog LOG
+
+
+
+
