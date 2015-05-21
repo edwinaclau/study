@@ -42,7 +42,7 @@ zslInsert  O(logN)
 
 zslDeleteNode    删除给定的跳表节点
 
-http://www.searchtb.com/wp-content/uploads/2011/04/Image011790.jpg
+
 
 
 其实中心思想就是随机分层索引，
