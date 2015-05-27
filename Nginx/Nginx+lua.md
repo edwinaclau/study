@@ -1,58 +1,60 @@
-set $expire "600";
+    set $expire "600";
     set $salt "mysalt";
     location ~* \.mp3$ {
-#local m = ngx.re.match(ngx.var.uri,"^/([0-9]{4})/([0-9]{2})/([0-9]{2})/([0-9]{2})/([0-9]{2})/([0-9a-z]{32})(/.*)")
+    #local m = ngx.re.match(ngx.var.uri,"^/([0-9]{4})/([0-9]{2})/([0-9]{2})/([0-9]{2})/([0-9]{2})/([0-9a-z]{32})(/.*)")
 #用ngx.re.match就不能%d,用string.match就不能{2}，郁闷
 #而且ngx.re.match所有的捕获都在m数组里，这点类似perl的m//返回。
         rewrite_by_lua '
-        local date = {}
-        local md5str
-        local path
-        date.year,date.month,date.day,date.hour,date.min,md5str,path = string.match(ngx.var.uri,"^/(%d+)/(%d+)/(%d+)/(%d+)/(%d+)/(%w+)(/%S+)")
-        if date.year == nil then
-             ngx.exit(404)
-        end
-        local time1 = tonumber(os.time(date))
-        local time2 = tonumber(ngx.time())
-        if md5str == ngx.md5(ngx.var.salt..date.year..date.month..date.day..date.hour..date.min..path) then
-            if time2 - time1 < tonumber(ngx.var.expire) then
-                ngx.req.set_uri(path)
-            else
-                ngx.exit(405)
-            end
-        else
-            ngx.exit(403)
-        end
-        ';  
-        proxy_pass         http://backend;
-        proxy_set_header   Host     $host;
+    local date = {}
+    local md5str
+    local path
+    date.year,date.month,date.day,date.hour,date.min,md5str,path = string.match(ngx.var.uri,"^/(%d+)/(%d+)/(%d+)/(%d+)/(%d+)/(%w+)(/%S+)")
+    if date.year == nil then
+     ngx.exit(404)
+    end
+    local time1 = tonumber(os.time(date))
+    local time2 = tonumber(ngx.time())
+    if md5str == ngx.md5(ngx.var.salt..date.year..date.month..date.day..date.hour..date.min..path) then
+    if time2 - time1 < tonumber(ngx.var.expire) then
+    ngx.req.set_uri(path)
+    else
+    ngx.exit(405)
+    end
+    else
+    ngx.exit(403)
+    end
+    ';  
+    proxy_pass http://backend;
+    proxy_set_header   Host $host;
     }
-
-
+    
+    
      content_by_lua '  clientIP = ngx.req.get_headers()["X-Real-IP"] if clientIP == nil then clientIP = ngx.req.get_headers()["x_forwarded_for"]
+    
+    end if clientIP == nil then clientIP = ngx.var.remote_addr
+    
+    end
+    
+    local memcached = require "resty.memcached" local memc, err = memcached:new() if not memc then ngx.say("failed to instantiate memc: ", err)
+    
+    return
+    
+    end
+    
+    local ok, err = memc:connect("127.0.0.1", 11211) if not ok then ngx.say("failed to connect: ", err)
+    
+    return
+    
+    end
+    
+    local res, flags, err = memc:get(clientIP) if err then ngx.say("failed to get clientIP ", err)
+    
+    return
 
-            end if clientIP == nil then clientIP = ngx.var.remote_addr
 
-            end
 
-                local memcached = require "resty.memcached" local memc, err = memcached:new() if not memc then ngx.say("failed to instantiate memc: ", err)
 
-                    return
-
-                end
-
-                local ok, err = memc:connect("127.0.0.1", 11211) if not ok then ngx.say("failed to connect: ", err)
-
-                    return
-
-                end
-
-                local res, flags, err = memc:get(clientIP) if err then ngx.say("failed to get clientIP ", err)
-
-                    return
 Nginx-Lua过滤POST请求
-
-注：此文章会持续更新
 
 2012 来的几天关于Hash攻击的文章不断，基本语言级别的都收到影响。
 
