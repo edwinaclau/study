@@ -215,19 +215,14 @@ PHP的所有 局部变量,全局变量,函数,类的 Hash表 都在这里定义�
 PHP里最基本的单元 变量:
 在PHP里 定义一个变量 再简单不过了
 如
-1
-2
-3
+
 &lt;?php
 $a=1;
 ?&gt;
 但是在内核中 它是用一个 zval结构体实现的
 如上面定义变量 在内核中则执行了下面这些代码
 
-1
-2
-3
-4
+
 zval *val;
 MAKE_STD_ZVAL(val);  //申请一块内存
 ZVAL_STRING(val,&quot;hello&quot;,1);//用ZVAL_STRING设置它的值为 &quot;hello&quot;
@@ -242,62 +237,59 @@ ALLOC_ZVAL(zv); \  //它归根到底等于 (p) = (type *) emalloc(sizeof(type))
 INIT_PZVAL(zv);
 INIT_PZVAL定义在
 
-1
-2
-3
-#define INIT_PZVAL(z)           \ 看得出它是初始化参数
-(z)-&gt;refcount__gc = 1;  \
-(z)-&gt;is_ref__gc = 0;
-那么 zval到底是什么呢
-在zend/zend.h里面
-typedef struct _zval_struct zval; //原来它是 _zval_struct 的别名
-_zval_struct 定义如下
 
+    #define INIT_PZVAL(z)   \ 看得出它是初始化参数
+    ;refcount__gc = 1;  \
+    is_ref__gc = 0;
+    那么 zval到底是什么呢
+    在zend/zend.h里面
+    typedef struct _zval_struct zval; //原来它是 _zval_struct 的别名
+    _zval_struct 定义如下
 
-typedef union _zvalue_value {
-        long lval;  //保存long类型的数据
-        double dval; //保存 double类型的数据
-        struct {
-                char *val; //真正的值在这里
-                int len;   //这里返回长度
-        } str;
-        HashTable *ht;
-        zend_object_value obj; //这是一个对象
-} zvalue_value;
+    
+    typedef union _zvalue_value {
+    long lval;  //保存long类型的数据
+    double dval; //保存 double类型的数据
+    struct {
+    char *val; //真正的值在这里
+    int len;   //这里返回长度
+    } str;
+    HashTable *ht;
+    zend_object_value obj; //这是一个对象
+    } zvalue_value;
  
-struct _zval_struct {
-zvalue_value value;             //保存的值
-zend_uint refcount__gc;//被引用的次数 如果为1 则只被自己使用如果大于1 则被其他变量以&amp;的形式引用.
-zend_uchar type;       //数据类型 这也是 为什么 PHP是弱类型的原因
-zend_uchar is_ref__gc;  //表示是否为引用
-};
-如果还是不够清楚..那么我们实战一下..用C来创建一个PHP变量
-这里需要一个扩展,PHP如果用C扩展模块 这里就不说了
-关键代码
+    struct _zval_struct {
+    zvalue_value value; //保存的值
+    zend_uint refcount__gc;//被引用的次数 如果为1 则只被自己使用如果大于1 则被其他变量以&amp;的形式引用.
+    zend_uchar type;   //数据类型 这也是 为什么 PHP是弱类型的原因
+    zend_uchar is_ref__gc;  //表示是否为引用
+    };
+    如果还是不够清楚..那么我们实战一下..用C来创建一个PHP变量
+    这里需要一个扩展,PHP如果用C扩展模块 这里就不说了
+    关键代码
+    
+    
+    PHP_FUNCTION(test_siren){
+    zval *value;
+    char *s=&quot;create a php variable&quot;;
+    value=(zval*)malloc(sizeof(zval));
+    memset(value,0,sizeof(value));
+    value-&gt;is_ref__gc=0; //非引用变量
+    value-&gt;refcount__gc=1;//引用次数 只有自己
+    value-&gt;type=IS_STRING;//类型为字符串
+    value-&gt;value.str.val=s;//值
+    value-&gt;value.str.len=strlen(s);//长度
+    ZEND_SET_SYMBOL(EG(active_symbol_table),&quot;a&quot;,value);
+    }
 
 
-PHP_FUNCTION(test_siren){
-        zval *value;
-        char *s=&quot;create a php variable&quot;;
-        value=(zval*)malloc(sizeof(zval));
-        memset(value,0,sizeof(value));
-        value-&gt;is_ref__gc=0; //非引用变量
-        value-&gt;refcount__gc=1;//引用次数 只有自己
-        value-&gt;type=IS_STRING;//类型为字符串
-        value-&gt;value.str.val=s;//值
-        value-&gt;value.str.len=strlen(s);//长度
-        ZEND_SET_SYMBOL(EG(active_symbol_table),&quot;a&quot;,value);
-}
 第三行和第四行的作用 与MAKE_STD_ZVAL的作用相同,给value分配内存空间
 第5-9行 的作用与ZVAL_STRING的作用相同,
 最后一行 是将value创建一个 在PHP里叫$a的变量..并添加到局部Hash表里..
 这样 在PHP里
 
-1
-2
-3
-4
-&lt;?php
+
+<? php
 test_siren(1);
 echo $a;
-?&gt;
+?>;
