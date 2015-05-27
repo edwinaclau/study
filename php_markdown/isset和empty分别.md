@@ -1,7 +1,7 @@
 # PHP内核函数里面有提供了两个函数用来检测 变量
 ####isset和empty,这两个有什么区别?
 
-```php
+```
 <?php
 //第一种
 var_dump(empty($a));   //true  为空

@@ -1,21 +1,22 @@
+#php function
 
-```php
+```
 function hello($str){
 echo $str;
 }
 ```
+
 在/zend/zend_language_parse.y中找到 T_FUNCTION
 
-```c
-function:
-        T_FUNCTION { $$.u.opline_num = CG(zend_lineno); }
-;
 ```
-```c
+function:
+        T_FUNCTION { $$.u.opline_num = CG(zend_lineno); };
+```
+
+```
 unticked_function_declaration_statement: //译为 "函数声明语句"
                 function is_reference T_STRING { zend_do_begin_function_declaration(&$1, &$3, 0, $2.op_type, NULL TSRMLS_CC); }
                         '(' parameter_list ')' '{' inner_statement_list '}' { zend_do_end_function_declaration(&$1 TSRMLS_CC); }
-;
 ```
 
 
@@ -136,7 +137,7 @@ void zend_do_begin_function_declaration(znode *function_token, znode *function_n
         CG(labels) = NULL;
 }
 ```
-保存自定义函数的结构如下
+自定义函数结构
 
 ```c
 typedef union _zend_function {
@@ -162,6 +163,5 @@ typedef union _zend_function {
 初始化op_array
 生成 zend_op
 生成的中间码 ZEND_DECLARE_FUNCTION
-更新函数表function_table
-这样 函数的定义就完了..
-下一节详细介绍 函数的参数.
+更新function_table
+

@@ -1,6 +1,5 @@
 在PHP中,所有的数据 无论变量,常量,类,属性 都用Hash表来实现.
 
-    
     typedef struct bucket {
     ulong h;/* Used for numeric indexing */
     uint nKeyLength; //key长度
@@ -31,52 +30,56 @@
     } HashTable;
 
 
-ZEND_API int _zend_hash_init(HashTable *ht, uint nSize, hash_func_t pHashFunction, dtor_func_t pDestructor, zend_bool persistent ZEND_FILE_LINE_DC)
-{
- uint i = 3;
- Bucket **tmp;
- 
-SET_INCONSISTENT(HT_OK);
- 
- if (nSize &gt;= 0x80000000) { //HASH表大小大于0x8则初始化为0x8
+    ZEND_API int _zend_hash_init(HashTable *ht, uint nSize, hash_func_t pHashFunction, dtor_func_t pDestructor, zend_bool persistent ZEND_FILE_LINE_DC)
+    {
+     uint i = 3;
+     Bucket **tmp;
+     
+    SET_INCONSISTENT(HT_OK);
+     
+     if (nSize &gt;= 0x80000000) { //HASH表大小大于0x8则初始化为0x8
        /* prevent overflow */
        ht-&gt;nTableSize = 0x80000000;
- } else {
-       while ((1U &lt;&lt; i) &lt; nSize) { //调整为 2的n次方          i++;        }        ht-&gt;nTableSize = 1 &lt;&lt; i;//HASH bucket大小   为 2的i次方  i=3 ,nTableSize最小值为8
- }
+     } else {
+       while ((1U &lt;&lt; i) &lt; nSize) { //调整为 2的n次方  i++;}ht-&gt;nTableSize = 1 &lt;&lt; i;//HASH bucket大小   为 2的i次方  i=3 ,nTableSize最小值为8
+     }
+
+
+
 //为了提高计算效率，系统自动会将nTableSize调整到最小一个不小于nTableSize的2的整数次方。也就是说，如果在初始化HashTable时指定一个nTableSize不是2的整数次方，系统将会自动调整nTableSize的值 &lt;!--EndFragment--&gt;
- 
- ht-&gt;nTableMask = ht-&gt;nTableSize - 1;
- ht-&gt;pDestructor = pDestructor;//一个函数指针,当HashTable发生增,删,改时调用
- ht-&gt;arBuckets = NULL;
- ht-&gt;pListHead = NULL;
- ht-&gt;pListTail = NULL;
- ht-&gt;nNumOfElements = 0;
- ht-&gt;nNextFreeElement = 0;
- ht-&gt;pInternalPointer = NULL;
- ht-&gt;persistent = persistent;//如果persisient为TRUE，则使用操作系统本身的内存分配函数为Bucket分配内存，否则使用PHP的内存分配函数
- ht-&gt;nApplyCount = 0;
- ht-&gt;bApplyProtection = 1;
- 
- /* Uses ecalloc() so that Bucket* == NULL */
- if (persistent) {  //操作系统本身内存分配方式分配内存,calloc分配内存后自动初始化为0
- tmp = (Bucket **) calloc(ht-&gt;nTableSize, sizeof(Bucket *));
- if (!tmp) {
- return FAILURE;
- }
- ht-&gt;arBuckets = tmp;
- } else {//用PHP的内存管理机制分配内存
- tmp = (Bucket **) ecalloc_rel(ht-&gt;nTableSize, sizeof(Bucket *));
- if (tmp) {
- ht-&gt;arBuckets = tmp;
- }
- }
-//自动申请一块内存给arBuckets,该内存大小等于 nTableSize
-return SUCCESS;
-}
+     
+     nTableMask = ht-&gt;nTableSize - 1;
+     ht-&gt;pDestructor = pDestructor;//一个函数指针,当HashTable发生增,删,改时调用
+     ht-&gt;arBuckets = NULL;
+     ht-&gt;pListHead = NULL;
+     ht-&gt;pListTail = NULL;
+     ht-&gt;nNumOfElements = 0;
+     ht-&gt;nNextFreeElement = 0;
+     ht-&gt;pInternalPointer = NULL;
+     ht-&gt;persistent = persistent;//如果persisient为TRUE，则使用操作系统本身的内存分配函数为Bucket分配内存，否则使用PHP的内存分配函数
+     ht-&gt;nApplyCount = 0;
+     ht-&gt;bApplyProtection = 1;
+     
+     /* Uses ecalloc() so that Bucket* == NULL */
+     if (persistent) {  //操作系统本身内存分配方式分配内存,calloc分配内存后自动初始化为0
+     tmp = (Bucket **) calloc(ht-&gt;nTableSize, sizeof(Bucket *));
+     if (!tmp) {
+     return FAILURE;
+     }
+     ht-&gt;arBuckets = tmp;
+     } else {//用PHP的内存管理机制分配内存
+     tmp = (Bucket **) ecalloc_rel(ht-&gt;nTableSize, sizeof(Bucket *));
+     if (tmp) {
+     ht-&gt;arBuckets = tmp;
+     }
+     }
+    //自动申请一块内存给arBuckets,该内存大小等于 nTableSize
+    return SUCCESS;
+    }
 
 
 在读源码的时候 ,经常会看到 EG,PG,CG这样的宏
+
 CG是 compile_global的简写
 
 EG是excutor_global的简写
@@ -85,12 +88,13 @@ G就是全局变量的意思
 
 我们就以EG宏为例:
 
-#ifdef ZTS
-# define EG(v) TSRMG(executor_globals_id, zend_executor_globals *, v)
-#else
-# define EG(v) (executor_globals.v)
-extern ZEND_API zend_executor_globals executor_globals;
-#endif
+    #ifdef ZTS
+    # define EG(v) TSRMG(executor_globals_id, zend_executor_globals *, v)
+    #else
+    # define EG(v) (executor_globals.v)
+    extern ZEND_API zend_executor_globals executor_globals;
+    #endif
+
 很简单 只是一个获取全局变量的宏
 
 那么我们看看 zend_executor_globals这个结构体
@@ -105,200 +109,107 @@ typedef struct _zend_executor_globals zend_executor_globals;
 
 PHP的所有 局部变量,全局变量,函数,类的 Hash表 都在这里定义了
 
-1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
-20
-21
-22
-23
-24
-25
-26
-27
-28
-29
-30
-31
-32
-33
-34
-35
-36
-37
-38
-39
-40
-41
-42
-43
-44
-45
-46
-47
-48
-49
-50
-51
-52
-53
-54
-55
-56
-57
-58
-59
-60
-61
-62
-63
-64
-65
-66
-67
-68
-69
-70
-71
-72
-73
-74
-75
-76
-77
-78
-79
-80
-81
-82
-83
-84
-85
-86
-87
-88
-89
-90
-91
-92
-93
-94
-95
-96
-97
-struct _zend_executor_globals {
-zval **return_value_ptr_ptr;
+
+    struct _zend_executor_globals {
+    zval **return_value_ptr_ptr;
+     
+    zval uninitialized_zval;
+    zval *uninitialized_zval_ptr;
+     
+    zval error_zval;
+    zval *error_zval_ptr;
+     
+    zend_ptr_stack arg_types_stack;
+     
+    /* symbol table cache */
+    HashTable *symtable_cache[SYMTABLE_CACHE_SIZE];
+    HashTable **symtable_cache_limit;
+    HashTable **symtable_cache_ptr;
+     
+    zend_op **opline_ptr;
+     
+    HashTable *active_symbol_table;  //局部变量
+    HashTable symbol_table; /* main symbol table */ //全局变量
  
-zval uninitialized_zval;
-zval *uninitialized_zval_ptr;
- 
-zval error_zval;
-zval *error_zval_ptr;
- 
-zend_ptr_stack arg_types_stack;
- 
-/* symbol table cache */
-HashTable *symtable_cache[SYMTABLE_CACHE_SIZE];
-HashTable **symtable_cache_limit;
-HashTable **symtable_cache_ptr;
- 
-zend_op **opline_ptr;
- 
-HashTable *active_symbol_table;  //局部变量
-HashTable symbol_table; /* main symbol table */ //全局变量
- 
-HashTable included_files; /* files already included */ //include的文件
- 
-JMP_BUF *bailout;
- 
-int error_reporting;
-int orig_error_reporting;
-int exit_status;
- 
-zend_op_array *active_op_array;
- 
-HashTable *function_table; /* function symbol table */ //函数表
-HashTable *class_table; /* class table */ //类表
-HashTable *zend_constants; /* constants table */ //常量表
- 
-zend_class_entry *scope;
-zend_class_entry *called_scope; /* Scope of the calling class */
- 
-zval *This;
- 
-long precision;
- 
-int ticks_count;
- 
-zend_bool in_execution;
-HashTable *in_autoload;
-zend_function *autoload_func;
-zend_bool full_tables_cleanup;
- 
-/* for extended information support */
-zend_bool no_extensions;
- 
-#ifdef ZEND_WIN32
-zend_bool timed_out;
-OSVERSIONINFOEX windows_version_info;
-#endif
- 
-HashTable regular_list;
-HashTable persistent_list;
- 
-zend_vm_stack argument_stack;
- 
-int user_error_handler_error_reporting;
-zval *user_error_handler;
-zval *user_exception_handler;
-zend_stack user_error_handlers_error_reporting;
-zend_ptr_stack user_error_handlers;
-zend_ptr_stack user_exception_handlers;
- 
-zend_error_handling_t error_handling;
-zend_class_entry *exception_class;
- 
-/* timeout support */
-int timeout_seconds;
- 
-int lambda_count;
- 
-HashTable *ini_directives;
-HashTable *modified_ini_directives;
- 
-zend_objects_store objects_store;
-zval *exception, *prev_exception;
-zend_op *opline_before_exception;
-zend_op exception_op[3];
- 
-struct _zend_execute_data *current_execute_data;
- 
-struct _zend_module_entry *current_module;
- 
-zend_property_info std_property_info;
- 
-zend_bool active;
- 
-void *saved_fpu_cw;
- 
-void *reserved[ZEND_MAX_RESERVED_RESOURCES];
-};
+    HashTable included_files; /* files already included */ //include的文件
+     
+    JMP_BUF *bailout;
+     
+    int error_reporting;
+    int orig_error_reporting;
+    int exit_status;
+     
+    zend_op_array *active_op_array;
+     
+    HashTable *function_table; /* function symbol table */ //函数表
+    HashTable *class_table; /* class table */ //类表
+    HashTable *zend_constants; /* constants table */ //常量表
+     
+    zend_class_entry *scope;
+    zend_class_entry *called_scope; /* Scope of the calling class */
+     
+    zval *This;
+     
+    long precision;
+     
+    int ticks_count;
+     
+    zend_bool in_execution;
+    HashTable *in_autoload;
+    zend_function *autoload_func;
+    zend_bool full_tables_cleanup;
+     
+    /* for extended information support */
+    zend_bool no_extensions;
+     
+    #ifdef ZEND_WIN32
+    zend_bool timed_out;
+    OSVERSIONINFOEX windows_version_info;
+    #endif
+     
+    HashTable regular_list;
+    HashTable persistent_list;
+     
+    zend_vm_stack argument_stack;
+     
+    int user_error_handler_error_reporting;
+    zval *user_error_handler;
+    zval *user_exception_handler;
+    zend_stack user_error_handlers_error_reporting;
+    zend_ptr_stack user_error_handlers;
+    zend_ptr_stack user_exception_handlers;
+     
+    zend_error_handling_t error_handling;
+    zend_class_entry *exception_class;
+     
+    /* timeout support */
+    int timeout_seconds;
+     
+    int lambda_count;
+     
+    HashTable *ini_directives;
+    HashTable *modified_ini_directives;
+     
+    zend_objects_store objects_store;
+    zval *exception, *prev_exception;
+    zend_op *opline_before_exception;
+    zend_op exception_op[3];
+     
+    struct _zend_execute_data *current_execute_data;
+     
+    struct _zend_module_entry *current_module;
+     
+    zend_property_info std_property_info;
+     
+    zend_bool active;
+     
+    void *saved_fpu_cw;
+     
+    void *reserved[ZEND_MAX_RESERVED_RESOURCES];
+    };
+
+
+
 这里先简单看看,以后用到的时候再细说,
 
 PHP里最基本的单元 变量:
@@ -342,23 +253,7 @@ INIT_PZVAL定义在
 typedef struct _zval_struct zval; //原来它是 _zval_struct 的别名
 _zval_struct 定义如下
 
-1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-14
-15
-16
-17
+
 typedef union _zvalue_value {
         long lval;  //保存long类型的数据
         double dval; //保存 double类型的数据
@@ -380,18 +275,7 @@ zend_uchar is_ref__gc;  //表示是否为引用
 这里需要一个扩展,PHP如果用C扩展模块 这里就不说了
 关键代码
 
-1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
+
 PHP_FUNCTION(test_siren){
         zval *value;
         char *s=&quot;create a php variable&quot;;

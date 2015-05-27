@@ -1,8 +1,11 @@
-```php
+##php的for测试
+
+
+###code
+
+```
 
 <?php
-
-
 
   $arr = array('adf','fda','fdas','zdcvzv','vcvdf','oij');
 
@@ -16,7 +19,7 @@
 
 
 
-
+```
 Finding entry points
 Branch analysis from position: 0
 Jump found. Position 1 = 20, Position 2 = 15
@@ -62,3 +65,7 @@ branch: # 15; line:     9-   10; sop:    15; eop:    19; out1:  12
 branch: # 20; line:    12-   12; sop:    20; eop:    20; out1:  -2
 path #1: 0, 8, 20,
 path #2: 0, 8, 15, 12, 8, 20, 
+
+
+
+```
