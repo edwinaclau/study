@@ -1,0 +1,80 @@
+index.php入口，定义系统环境
+
+PHP版本 调试模式开启 定义应用目录
+
+
+require '/.ThinkPHP/ThinkPHP.php';
+
+
+
+
+进入了这个口之后，就是一堆系统变量要定义
+
+begin time,Memory
+
+URL的4种模式
+
+文件后缀，项目路径状态
+
+
+
+SAE环境
+
+
+系统运行时目录
+
+系统核心库目录
+
+Think类库目录
+
+行为类库
+
+系统应用
+
+第三方类库
+
+应用公共目录
+
+应用配置目录
+
+应用语言目录
+
+应用静态目录
+
+应用日志目录
+
+应用缓存目录
+
+应用数据目录
+
+因公模板缓存目录
+
+配置文件的后缀
+
+配置文件解析方法
+
+
+MAGIC_QUOTES_GPC 是什么?
+
+PHP_SAPI
+
+IS CLI
+
+
+
+当前文件名
+
+
+CGI/FSTCGI模式下
+
+ $_temp = explode('.php', $_SERVER['PHP_SELF']);
+
+  define('_PHP_FILE_',    rtrim(str_replace($_SERVER['HTTP_HOST'],'',$_temp[0].'.php'),'/'));
+
+
+  _PHP_FILE
+
+
+  require CORE_PATH.'Think'.EXT;
+
+  Think\Think::start();

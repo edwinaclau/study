@@ -1,0 +1,107 @@
+创建进程有三种方式
+
+fork vfork close
+
+
+long do_fork(unsigned long clone_flags, unsigned long ,)
+
+
+
+
+clone_flags:
+
+
+
+stack_start:
+
+
+regs:
+
+stack_size:
+
+parent_tidptr, child_tidptr
+
+asmlinkage long sys_fork(struct pt_regs *reg)
+{
+	return do_fork(SIGCHILD,regs->rsp, regs,0, NULL,NULL);
+}
+
+asmlinkage long sys_vfork(stuct pt_reges *regs)
+{
+   return do_fork(CLONE VFORK|CLONE_VM|SIGCHILD,)
+}
+
+asmlinkage long sys_clone(struct pt_regs regs)
+{
+    unsigned long clone_flags;
+    unsigned long newsp;
+    int __user *parent_tidptr,*child_tidptr;
+    /*将参数转化为具体的系统调用参数，传递给do_fork*/
+    clone_flags = regs.ebx;
+    newsp = regs.ecx;
+    parent_tidptr = (int __user *)regs.edx;
+    child_tidptr = (int __user*)regs.edi;
+    if(!newsp)
+        newsp = regs.esp;
+    return do_fork(clone_flags,newsp,&regs,0,parent_tidptr,child_tidptr);
+}
+
+
+
+do_fork
+
+   |---------> copy_process
+   |
+   |---------> CLONE_NEWPID?  
+   |
+   |
+   |---------> CLONE_PARENT_SETTID
+   |
+   |---------> CLONE_VFORK
+   |
+   |
+   |---------> wake_up_new_task
+   |
+   |
+   |
+   ---------> CLONE_VFORK ? ---> wait_for
+
+   do_fork
+
+   1.判断clone_flags,调用copy_process,产生子进程，
+   2.产生新的pid,设置了CLONE_NEWPID,则在父进程的命名空间中分配新的pid,否则生成新的命名空间，返回pid。
+
+nr = (clone_flags & CLONE_NEWPID)?
+    //直接从当前进程的命名空间中分配一个pid
+    task_pid_nr_ns(p,current->nsproxy->pid_ns):
+        task_pid_vnr(p);//
+3.是否是创建线程？如果设置了CLONE_PARENT_SETTID，则需要将刚刚获取的nr写到用户的行参中.
+if(clone_flags & CLONE_PARENT_SETTID)
+        put_user(nr,parent_tidptr);
+4.是否设置了CLONE_VFORK标志，如果设置了该标志，则需要初始化相关数据结构
+if(clone_flags & CLONE_VFORK) {
+        p->vfork_done = &vfork;
+        /*vfork类型定义如下:
+         struct completion {
+            unsigned int done;
+            wait_queue_head_t wait;
+         }
+        */
+        init_completion(&vfork);
+    }
+5.判断CLONE_STOPPED，开始启动任务
+if(!(clone_flags & CLONE_STOPPED))
+        //放入调度队列，等待运行，防止一直fork，消耗cpu时间
+        wake_up_new_task(p,clone_flags);
+    else
+        p->state = TASK_STOPPED;
+6.如果是vfork机制，则父进程开始睡眠，等待子进程退出，这样就能保证两个进程不能使用相同的进程地址空间。
+if(clone_flags & CLONE_VFORK) {
+        //设置内存访问标志，防止当前进程访问
+        freezer_do_not_count();
+        wait_for_completion(&vfork);
+        //解除访问标志
+        freezer_count();
+        …...
+    }
+

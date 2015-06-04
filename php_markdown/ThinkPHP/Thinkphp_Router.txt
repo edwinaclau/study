@@ -1,0 +1,21 @@
+<? php
+
+
+class Route {
+    //路由检测
+   public static function check() {
+        
+	   $depr = C('URL_PATHINFO_DEP');
+	   $regx = preg_replace()
+
+	   if('/' != $depr) {
+	         $regex = str_replace($depr,'/',$regex);
+	   }
+
+	   $maps = C('URL_MAP_RULES');
+
+   
+   
+   }
+
+}

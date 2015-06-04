@@ -1,0 +1,43 @@
+chapter 11
+
+现代操作系统，事件
+
+真实时间 (Wall Time)
+
+
+
+进程时间 (Process Time)
+
+
+
+
+单调时间
+
+
+
+
+微妙级精度
+
+
+
+struct timeval {
+      time_t       tv_sec; //seconds
+	  suseconds_t  tv_usec; //microseconds
+};
+
+
+#inclue <time.h>
+
+struct timespec {
+      time_t tv_sec;
+      time_t tv_nsec;
+}
+
+
+#include <time.h>
+
+struct timespce {
+
+    time_t  tv_sec;
+	long    tv_nsec;
+}

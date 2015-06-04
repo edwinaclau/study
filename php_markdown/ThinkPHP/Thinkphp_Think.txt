@@ -1,0 +1,64 @@
+
+
+ 类映射
+   $_map = array();
+
+
+   $_instance = array();
+
+
+   static public function start() {
+   
+      spl_autoload_register('Think\Think::autoload');
+
+	  register_shutdown_function('');
+	  set_error_handler()
+	  set_exception_handler('')
+
+	  Storage::connect(STORAGE_TYPE);
+
+	  $runtimefile = RUNTIME_PATH.APP_MODE.'~runtime.php';
+
+
+	  foreach ($mode['config'] as $key=>$file) {
+	       is_numeric($key)?C(load_config($file)):C($key)
+	  }
+
+
+	  if(isset($mode['alias'])){
+		  self::addMap(is_array)
+	  }
+
+
+	  if(is_file(CONF_PATH.'alias.php'))
+		  self::addMap(include CONF_PATH.'alias.php');
+
+   }
+
+
+//这个是DEBUG模式
+  static public function halt($error) {
+        $e = array();
+		if ()
+  
+  }
+
+获取页面的Trace记录
+
+变量
+标签
+日志级别
+是否记录在日志
+static public function trace($value'[think]', $label=) {
+    static $_trace = array();
+	if('[think]' === $value) {
+	   return _$trace;
+	} else {
+	
+	}
+
+
+}
+
+
+

@@ -1,0 +1,38 @@
+读写锁是 互斥量 类似
+
+
+读写锁有更高并行性，。互斥量要么加锁要么不加锁，而且同一时刻只允许一个线程对其加锁。对于一个变量的读取，
+
+
+
+
+pthread_rwlock_t   rwlock;
+
+
+读写所有三种状态  读模式下加锁， 写模式下加锁，不加锁
+
+多个线程 同时 占有 读模式
+
+
+读写锁在加锁
+
+
+
+int phtread_rwlock_init(pthread_rwlock_t *restrict rwlock,
+		pthread_rwlockattr_t *restrict attr)
+
+int pthread_rwlock_destory(pthread_rwlock_t *rwlock);
+
+
+加锁 和 解锁
+
+      1.读模式加锁
+	    int pthread_rwlock_rdlock(pthread_rwlock_t *rwlock)
+	    int pthread_rwlock_trydlock(pthread_rwlock_t *rwlock);
+
+	  2. 写模式读锁
+
+
+
+	  3.解锁
+	   int pthread_rwlock_unlock(pthred_rwlock_t *rwlock)

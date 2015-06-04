@@ -1,0 +1,52 @@
+用户ID 和 组 ID
+
+分别用C语言uid_t  和 gid_t表示
+
+/etc/passwd
+
+
+/etc/group
+
+
+
+linux 实际用户(real userID), 有效用户(effective userID),保留的用户(saved userID)
+	  文件系统用户(filesystem user ID)
+
+	实际用户ID 运行这个进程用户uid,
+	
+
+
+
+	改变实际用户/组ID和保留的用户/组ID
+
+
+#include <sys/types.h>
+#include <unistd.h>
+
+int setuid (uid_t uid);
+int setgid (gid_t gid);
+
+
+
+setuid() 会设置当前进程有效用户ID，
+
+
+
+改变有效的用户ID或组ID
+
+#include <sys/types.h>
+#include <unistd.h>
+
+int seteuid (uid_t euid);
+int setegid (gid_t egid);
+
+
+
+
+
+
+会话(Session) 和 进程组
+
+每个进程都 有一个 进程组首进程(process group leader) 进程组ID，会话是一个或多个进程组集合
+
+进程组

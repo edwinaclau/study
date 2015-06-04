@@ -1,0 +1,59 @@
+defined('THINK_PATH') or exit();
+
+   //定性配置文件
+
+ 匿名数组
+return array(
+		'APP_USE_NAMESPACE'
+		'APP_SUB_DOMAIN_DEPLOY'
+		'APP_SUB_DOMAIN_RULES'
+		'APP_DOMAIN_SUFFIX'
+		'ACTION_SUFFIX'
+		'MULTI_MODULE'
+		'MODULE_DENY_LIST'
+
+		
+	     ..........	
+		
+		子域名开启
+		操作方法后缀
+
+		允许多模块
+
+		自动加载路径
+
+		Cookie有效期
+		Cookie有效域名
+        Cookie路径
+		Cookie前缀
+		Cookie安全传输
+		Cookie
+		
+
+		模板语言
+		视图模板
+		编码
+		JSON
+
+
+
+		数据库设置
+
+		'DB_TYPE'
+		'DB_HOST'
+		'DB_NAME'
+		'DB_USER'
+		'DB_PWD'
+		'DB_PORT'
+		'DB_PREFIX'
+		
+		控制器 默认
+
+		URL
+
+		网页缓存控制
+
+		Local 文件上传
+		数据加密
+		
+		)
