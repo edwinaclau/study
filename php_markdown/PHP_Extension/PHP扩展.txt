@@ -1,0 +1,105 @@
+
+
+1.生成扩展框架
+
+cd /root/php-5.4.0/ext
+./ext_skel -extname=myfunctions
+修改config.m4部分，找到PHP_ARG_ENABLE部分
+
+
+去掉dnl注释标记
+PHP_ARG_ENABLE(myfunctions, whether to enable myfunctions support)
+
+添加函数声明
+
+PHP_MINIT_FUNCTION(myfunctions)
+PHP_MSHUTDOWN_FUNCTION()
+PHP_RINIT_FUNCTION
+php_rshutdown_function(MYFUNCTONS);
+PHP_MINFO_FUNCTION();
+
+
+PHP_FUNCTION(confirm myfunctions_compiled); 
+PHP_FUNCTION(self_concat);
+
+
+函数，
+
+zend_parse_parameters(argc, TSRMLS_CC)
+
+
+将self_concat函数加入函数结构体
+
+PHP_FE(self_concat, NULL)
+
+
+ZEND_API 函数部分
+
+ZEND_API int zend_parse_parameters(int num_args TSRMLS_DC, const char *type_spec, ...);
+
+第一个参数，函数个数
+
+
+第二个参数，为了线程安全，TSRMLS_CC宏
+
+
+第三个参数
+
+类型指定符
+l             long        有符号整数
+
+
+d             double      浮点数
+
+s            char *, int  二进制字符串，长度
+
+b            zend_bool     布尔型(1或0)
+
+r            zval*         资源(文件，数据库)
+
+a            zval*          数组
+
+o            zval*           任何类型对象
+
+O            zval*           指定类型的对象，
+
+z
+
+Z
+
+
+| 表示 之前参数是必须的，后面默认
+
+
+!  接收null,变成C的NULL，而不是封装成IS_NULL类型的zval。
+
+如果 传递过来有zval ,强行分离
+
+
+另外一个获取函数参数的方法
+
+zend_get_paramerter()函数
+
+ZEND_API int zend_get_parameters(int ht int param_count,..)
+
+
+
+它不会自动进行类型转换，所有的参数在扩展实现中的载体都需要是zval*类型的。
+其次，zend_get_parameters()在接收失败的时候，并不会自己抛出错误，它也不能方便的处理具有默认值的参数的情况。
+最后一点与zend_parse_parameters不同的是，它会自动的把所有复合copy-on-write的zval进行强制分离，生成一个崭新的copy送到函数内部。如果你希望用它其它的特性，而唯独不需要这个功能，可以用zend_get_parameters_ex()函数来接收参数。其原型定义如下：
+
+1
+ZEND_API ZEND_ATTRIBUTE_DEPRECATED int zend_get_parameters_ex(int param_count, ...);
+为了不对copy-on-write的变量进行分离操作，zend_get_parameters_ex()的参数是zval**类型的，而不是zval*。
+注意zend_get_parameters_ex并不需要ZEND_NUM_ARGS()作为参数。
+
+其它补充函数：
+
+ZEND_API int _zend_get_parameters_array(int ht, int param_count, zval **argument_array TSRMLS_DC);
+#define zend_get_parameters_array(ht, param_count, argument_array)  _zend_get_parameters_array(ht, param_count, argument_array TSRMLS_CC) 
+zend_get_parameters_array()：将zval*类型的参数填充到argument_array中，需要ZEND_NUM_ARGS()作为参数。
+
+ZEND_API int _zend_get_parameters_array_ex(int param_count, zval ***argument_array TSRMLS_DC);
+#define zend_get_parameters_array_ex(param_count, argument_array)  _zend_get_parameters_array_ex(param_count, argument_array TSRMLS_CC)
+zend_get_parameters_array_ex()：与zend_get_parameters_array()类似，但不需要ZEND_NUM_ARGS()参数。
+

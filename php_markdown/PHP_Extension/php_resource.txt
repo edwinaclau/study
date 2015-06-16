@@ -1,0 +1,49 @@
+typedef struct _zend_rsrc_list_entry {
+    void *ptr;
+    int type;
+    int refcount;
+} zend_rsrc_list_entry;
+
+
+
+ptr 是指向数据库 或者 文件句柄
+
+type 区分类型
+
+ 资源类型可分为普通的资源，以及持久型的资源。例如mysql普通连接与持久连接。均保存在_zend_executor_globals结构体当中，其中包含如下两个HashTable：
+
+
+ 资源
+
+ 内核将资源变量存储在一个HashTable中，ID为key
+
+#define Z_RESVAL (zval)   (zval).value.lval
+#define Z_RESVAL_P(zval)   Z_RESVAL(*zval)
+#define Z_RESVAL_PP(zval)  Z_RESVAL(**zval)
+
+
+了区分资源类型，需要为我们定义的资源定义类型名称。
+#define MY_RES_NAME "my_resource" //资源类型名称，PHP通过var_dump打印资源变量时会看到这个名称  
+static int my_resource_descriptor;  
+  
+ZEND_MINIT_FUNCTION(jinyong)  
+{  
+    my_resource_descriptor = zend_register_list_destructors_ex(NULL, NULL, MY_RES_NAME, module_number);//向内核中注册新的资源类型  
+}  
+ 
+
+
+static void php_myres_dtor(zend_rsrc_list_entry *rsrc TSRMLS_DC){//析构函数被调用时，会接受一个当前资源变量的参数  
+    FILE *fp = (FILE*)rsrc->ptr;  
+    fclose(fp);  
+}  
+  
+ZEND_MINIT_FUNCTION(jinyong)  
+{  
+    my_resource_descriptor = zend_register_list_destructors_ex(php_myres_dtor, NULL, MY_RES_NAME, module_number);  
+}  
+
+
+在PHP中，所谓资源变量，实际都是通过存储整型值，在到内核全局资源变量列表EG(regular_list)中找到对应的指针，并进行相应操作。  
+而PHP资源变量，之所以不用担心类似MYSQL连接未释放问题，也是因为扩展中定义了析构方法，帮助自动释放。
+

@@ -1,7 +1,7 @@
 
-http://dev.mysql.com/doc/refman/5.5/en/explain-output.html
+###http://dev.mysql.com/doc/refman/5.5/en/explain-output.html
 
-
+主要问题
 一般都是没有索引(key 是null)
 
 很多处理过行(rows)
