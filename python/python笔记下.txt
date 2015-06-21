@@ -1,0 +1,226 @@
+建议73： 理解单元测试的概念
+
+  1)减少存在的bug
+
+  2)大大缩减软件修复的成本
+
+  3)为继承测试提供基本保障
+
+
+
+  1)测试线性
+
+  2）创建测试计划
+
+  3）测试脚本
+
+  4)修正代码缺陷
+
+
+  5）修正代码缺陷
+
+
+  一致性。
+
+
+  原子性
+
+
+  单一职责
+
+
+  testMethod():
+	  assertTrue(behavioour1)
+	  assertTrue(behaviour2)
+
+  应该修改为
+     testMethodCheckBahaviour1 ():
+		 assertTrue(behaviour1)
+	 testMethodCheckBehaviour2 ():
+		 assertTrue(behairour2)
+
+
+   隔离性，不依赖于具体环境设置，数据库访问，环境变量
+
+
+	
+
+
+
+
+def foo():
+	sum = 0
+	for i in range(100):
+		sum += i
+	return sum
+
+if __name__ == "__main__"
+    import cProfile
+	cProfile.run()
+
+侠士函数热点
+
+
+	cProfile,ncalls,cumtime,percall,filename:lineno(function)
+
+	ncalls   函数被调用次数
+
+	tottime  函数总计运行时间
+
+	percall 函数运行一次平均时间
+
+	cumtime
+
+	percall
+
+	filename:lineno(function)
+
+
+	if __name__ == "__main__"
+	     import cProfile
+		 cProfile.run()
+	     import pstats
+		 p = pstats.Stats("prof.txt")
+		 p.sort_stats("time").print_stats()
+
+
+	
+	
+建议85:使用生成器提高效率
+
+ de fab(n):
+	 i, a, b = 0, 0, 1
+	 foblist = []
+	 while i < n:
+	      foblist.append(b)
+	      a,b = b, a + b
+	      i = i + 1
+
+	 return foblist
+
+  print fab(4)
+
+
+	iterator, 可迭代对象 迭代器 生成器
+
+
+	Iterables: 包含有 _gettiem_() 或者 _iter_() 方法的数据容器对象
+
+
+	Iterator包含有 next()方法 __iter__方法()
+
+
+	Generator: 包含有yield语句的函数，拥有与迭代器类似
+
+
+
+   生成器(generator)  迭代器(iterator)  可迭代对象(iterable)
+
+
+	def mygen(x):
+		for i in range(x):
+			yield i
+
+	d = mygen(1)
+	d
+>>生成了genrator object 对象
+
+
+	d.next()
+
+
+	实际上需要循环过程，处理一个序列中的元素
+
+	yield语句与return语句比较相似，
+	解释器遇到yield,自动返回yield语句之后的表达式的值
+	yield是保留所有局部变量，方便以后next()或者send()调用
+	而不是直接给垃圾回收期
+
+
+	def series():
+		print "begin"
+		m=1.0; n = 1
+		print "while begin"
+		while (1):
+			print "yield a data"
+			yield m/n
+			m = m + 2
+			n = n * -1
+			print "end"
+
+  生成器的优点总体几条
+
+
+  1）生成器提供便利，用户不需要自己实现__iter__
+
+  2)代码简洁
+
+  3)利用了Lazy evaluation 特性,需要时候才产生，而不是一次过产生，
+
+
+  4）协同程序更为容易实现，协同程序是有多个进入点，可以挂起函数,
+
+  加入了send() 可以传递值给yield,而且能够恢复生成 close() 和 throw() 方法
+
+  使得协同程序更为容易
+
+
+
+
+  def fib(n):
+	  a = b = 1
+	  for i in range(n):
+		  yield a
+		  a, b = b, a+b
+
+
+  建议86:使用不同的数据结构优化性能
+
+  
+  建议88：使用multiprocessing 克服GIL的缺陷
+
+  Python中多线程无法发挥优势，为了能充分发挥多核的Python中的多进程
+
+  Process([group] [,target [, name [, args [, kwargs]]]])
+
+
+	参数target 表示可调用对象，args表示调用对象的位置参数元组; kwargs表示调用对象的字典
+
+    name 进程的名称;  group 一般设置为None. 类提供的方法 与 属性基本上与 threading.Thread 类一致
+
+	is_alive()， join([Timeout]), run(),start(),terminate(),daemon,exitcode, name, pid
+
+
+
+
+ 不同于线程，每个进程都是独立空间
+
+
+ 同步需要Lock Event, Condition, Semaphore
+
+
+ 传统的管道通信机制 pipe 以及 Queue  用于共享资源的multiprocessing.Value 和 multiproecessing.Array以及Manager
+
+
+ Multprocessing 模块需要注意几点
+
+ 1）进程间的通信 优先考虑 Pipe 和 Queue 而不是Lock, Event, Conditition,Semaphore
+
+ 2) 
+
+
+ close(): 表明不再存放数据到queue中，一单所有
+
+
+ join_thread()
+
+
+ cancel_join_thread()
+
+
+	Multiprocess 中 还有 SimpleQueue队列
+
+
+
+	from multiprocessing import Process, Pipe, Queue
+

@@ -1,0 +1,429 @@
+pythonic 
+  避免劣化代码
+
+ 1）避免只用大小写来区分不同的对象
+
+ 2）避免使用容易引起混淆的名称
+
+
+ def funA(list, num):
+	 for element in list:
+	      if num == element:
+	              return True
+	      else:
+	              pass
+
+
+	 def find_num(searchLIst,num):
+		  for listValue in searchList:
+		             if num == listValue:
+		                    return True
+		             else:
+		                    pass
+
+	3）不要怕过长名字
+
+	person_info = {'name':'john','IDCard':'2003'}
+
+
+
+	python 与 c 的不同
+
+	(1) 缩进与{}
+
+
+    (2) ' 与 ""
+
+
+	(3) 三元操作符 "?:"
+
+
+    python 注释
+
+	 单行 #increate x by 1
+	 多行 """Descript waht is functon dones
+
+	 """
+
+	 copyright声明
+	 """
+
+	 
+  
+	 assert语句发现问题
+
+
+
+	 充分利用lazy evaluation特性
+
+	  Python条件表达式if x or y ，当Xtrue 直接返回，不用理会y
+
+
+	  for time import time
+	  t = time()
+	abbervaiation
+	for i in xrange(10000):
+
+	
+
+	2) 节省空间
+	每次通过yield 才生成所需要的元素
+
+	 def fib():
+		 a,b = 0,1
+		 while True:
+		      yield a
+		     a, b = b, a + b
+
+		 fromitertools import islice
+
+
+	 理解枚举替代实现的缺陷
+
+
+	 (1) 类属性
+	   Sprintg = 0
+	   Summer = 1
+	   Autumn = 2
+	   Winter = 3
+
+	  (2) 借助函数
+	  def enum(*posarg, **keysarg):
+		  return type("Enum", (object), dirct(zip(posarg, xrange(len(posarg)))), **keysarg)
+
+
+	  (3) collections.namedtuple('Season', summer autumn winter)._make(range(4))
+
+
+
+      不推荐用type 检查
+
+	  def add(a, b):
+		  print add(1,j)
+		  print add('a','b')
+
+
+
+
+
+
+		  type(object) type(1) 等于<type int>
+		  基本类型模块 types.BooleanType,types.IntType,types.StringType,types.DictType
+
+
+		  enumerate() 获取序列迭代的索引和值
+
+		  li = [0'a', 'b', 'c', 'd', 'e']
+		  index = 0
+		  for i in li:
+		           print "index ", index, "element",i
+				   index += 1
+
+		   方法二,range 和 len结合
+		    li = ['a', 'b' ,'c', 'd']
+			for i in range(len(li)):
+				print "index:",i,"element",li[i]
+
+			方法三，使用while 循环，用len()获取循环次数
+
+
+			index = 0
+			while index < len(li)
+	                     print
+
+
+			方法四 zip() 方法
+
+
+
+
+
+
+		  分清 == 与 is 的适用场景
+           小心缓存池
+		   a = "Hi"
+		   b = "Hi"
+		   a is b
+		   True
+
+		   a == b
+		   True
+
+		   a1 = "I am using long string for testing""
+		   b1 = "I am using long string for testing"
+
+		   a1 is b1
+		   False
+
+		   a1 == b1
+		   True
+
+		   str1 = "string"
+		   str2 = "".join(['s','t'])
+		   str1 is str2
+		   False
+
+		   str1 == str2
+		   True
+
+
+
+
+		   考虑兼容性尽量用，Unicode
+
+
+
+		   strUnicode = u"unicode 字符串"
+		   strUnicode
+
+
+
+
+
+
+
+
+		   构建合理的包层次来管理module
+
+
+		   本质上每一个都是python的模块
+
+
+		   Package/__init__.py
+		        Module1.py
+				Module2.py
+				Subpackage/__init__.py
+				    Module1.py
+					Module2.py
+
+			包中的模块可以通过  "." 访问符，
+
+			1) 直接导入包
+			   import Package
+			2) 导入子模块或子包 包嵌套情况下
+
+			from Package import Module1
+			import Package Module1
+			from Package import Subpackage
+			import Package.Subpackage
+			From Package.subpackage import Module
+			import Package.Subpackage.Module
+
+
+			__init__.py文件作用，包和 目录区分
+
+
+			假如区分import Package Module的类Test,
+
+
+			from Package.Module import Test
+
+            定义变量，控制需要导入的子包或者模块
+			__all__ = ['Module', 'Module2', 'Subpackage']
+
+
+
+  chapter 3
+
+
+  from .... import 语句
+
+  一般尽量使用import a,访问B，就是a.B
+  有限的使用from a import B ,直接访问B
+  尽量避免使用from a import *, 污染命名空间，并且无法清晰导入那些对象
+
+
+   sys.modules --->  1) 是否该模块已经存在
+                     2） 如果在sys.modules 找不到对应模块的名称，则为需要导入
+					 3) 加载前确认是否需要对模块对应的文件进行编译
+					 4）执行动态加载，在当前模块的命名空间
+
+
+					 a = 1
+					 b = 'b'
+					 print "Testing module import"
+
+
+
+	(1) 命名空间的冲突
+	    a.py   b.py    importtest.py, 其中 a 和 b 都定义了 add 函数
+		当在import test 文件中同时采用from ... import..导入add
+
+		import 选择哪一个呢？
+
+
+
+		最近原则 
+
+
+
+
+		absult
+
+		
+
+
+  建议21： i+=1 不等于 ++i
+
+  i = 0
+  mylist = [1,2,3,4,5,6]
+  while i < len(mylist):
+	  print mylist[i]
+	  ++i
+
+ 
+  建议22:
+     f = open('test.txt', 'w')
+	 f.write("test")
+
+  解释器目录生成一个文件test.txt
+
+
+
+  with 表达式 [ as 目标]:
+     代码块
+
+  with expr1 as e1:
+      with expr2 as e2:
+
+
+	  with open('test.txt', 'w') as f:
+	      f.write("Test")
+
+
+		  1) 计算表达式的值，返回一个上下文管理器对象
+
+		  2）加载上下文管理器对象的__exit__() 方法以备后用
+
+		  3）如果with 语句中设置了目标对象，__enter__
+
+		  4) 如果with设置了目标对象，则将__enter__() 方法的返回值
+
+		  5）执行with 中的代码块
+
+		  6) 如果步骤5 代码正常结束，调用上下文管理对象的__exit__() 方法
+
+		  7) 如果步骤5代码中发生异常
+
+
+
+区别对待可变 和 不可变对象
+
+
+ teststr = "I am a python string"
+ teststr[11] = 'h'
+ print testr
+ a = array.array('c', teststr)
+ a.toString()
+ I am a Python string
+
+
+
+ class Student(object):
+	 def __init__(self,name, course=[]):
+		 self.name = name
+		 self.course=course
+	 def addcourse(self, coursename):
+		 self.course.append(coursename)
+	def printcourse(self):
+		for item in self.course:
+		print item
+
+
+
+		def __init__(self, name, course=None):
+			self.name = name
+			if course is None:course=[]
+			self.course=course
+
+
+
+			list1 = ['a','b','c','d']
+			list2 = list1
+
+
+			list1.append('d')
+			list1
+			['a','b','c','d']   () list2也会变化
+			list3 = list1[:]       切片是浅拷贝
+			list3.remove('a')
+			list3
+
+
+
+	   建议30 [] () {} 一致的容器初始化形式
+
+	   words = ['age', 'abandon', '']
+	   size = len(words)
+	   for i in range(size):
+		   if workds[i].strip().istitle():
+			   newlist.append(words[i])
+
+		print newlist
+
+
+        NewList = []
+		for iter_item in iterable:
+		      if cond_exppr:
+			      Newlist.append(expr)
+
+
+	nested_list =  [['Hello', 'world'], ['Goodbye', 'World']]
+	nested_list = [[s.upper() for s in xs] for xs in nested_list] 
+	print nested_list
+
+
+
+
+	建议31，函数传参 不是传值，也不是传引用
+  1）引用
+	def inc(n)
+	   print id(n)
+	   n = n+1
+	   print id(n)
+	n=2
+	id(n)
+	3333
+	inc(n)
+	3335
+
+
+	两者
+
+
+	2）传值
+	  def change_list(orginator_list):
+		  print "orginator list", orginator_list
+		  new_list = orginator_list
+		  new_list.append("I am new")
+		  print "new list is ", new_list
+		  return new_list
+
+
+	orginator_list = ['a','b','c']
+	new_list = change_list[orginator_list]
+	
+
+
+
+
+
+
+	3)可变对象引用
+
+	def change_me(org_list):
+		print id(org_list)
+		new_list = org_list
+		if len(new_lis)>5:
+		   new_list = ['a', 'b','c']
+		for i,e in enumerate(new_list):
+			if instance(e,list):
+				new_list[i]="**"
+		print new_list
+		print id(new_list)
+
+
+	传入的org_list 列表，属于可变对象，按照可变对象传引用的理解，new_list 和 orglist 指向同一块内存
+
+
+	test1

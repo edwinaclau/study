@@ -1,0 +1,278 @@
+s = ('select *'
+     'FROM atable '		
+	 'WHERE afield="value"''
+	)	
+
+s
+
+
+  a = "hi"
+  isinstance(a, str)
+  True
+
+  b =u"Hi"
+  isinstance(b, str)
+  False
+
+  isinstance(b,basestring)
+  True
+  isinstance(b, unicode)
+  True
+  isinstance(a, unicode)
+  False
+
+
+  用isinstance(a, str) 判断是否一个字符串是不是普通字符串，
+  
+  
+
+
+
+  chapter6 内部机制
+
+  建议54 理解built-in objects
+
+    内部类型(built-in type)  也是对象，有两种对象(classic classes)  new-style classes
+
+	class A:
+		pass
+    class B(object):
+		pass
+	class C(type):
+		pass
+
+	class D(dict):
+		pass
+
+	object <type 'type'>  *.__class__
+
+
+
+	init() 不是构造方法
+
+	def __new__(cls, *args, **kwargs):
+		print cls
+		print args
+		print kwargs
+		instance = object.__new__(cls, *args, **kwargs)
+		print instance
+
+	def __init__(self, a, b):
+		print "init gets called"
+		print "self is ", self
+		self.a, self.b = a, b
+
+
+	object.__new__(cls[args]) : cls代表类， args代表参数列表
+    object.__init__(self[,args]) self 代表实例对象， args代表参数列表
+
+
+	class Test(object):
+		def __new__(cls, x):
+			return super(Test,cls).__new__(cls)
+		def __init__(self,x,y):
+			self.x=x
+			self.y=y
+
+
+
+
+
+
+	建议44: 理解模块pickle优劣
+
+	序列化 在内存中不失去其身份和类型信息的情况下转成对象
+
+
+	pickle是最通用的序列化模块，C语言 实现了cPickle,
+
+
+	pick.dump(object,file[,protocol]):
+		序列化数据到一个文件描述符
+
+
+    load(file):
+		文件中的对象恢复为原来的对象，反序列化
+
+
+	import cPickle as pickle
+
+	my_data = {"name" : "Python" , "type": "Language", "version" : ""}
+	fp = open("picklefile.dat", "wb")
+	pickle_dump(my_data, fp)
+	fp.close()
+
+
+	fp = open("picklefile.dat", "rb")
+	out - pickle.load(fp)
+	print (out)
+
+	fp.close()
+
+
+
+	pickle使用存在一定限制:
+
+	pickle不能保证操作原子性。
+
+
+
+
+	pickle安全性
+
+	   一个pickle调用中发生异常，部分数据保存，另外对象处于递归深度，就会发生问题
+
+	   不提供安全性，被注入命令，例如 cat /etc/passwd
+
+	pickle协议是python定的，难夸语言
+
+
+
+
+
+	建议45： 序列化的另一个不错的选择-----JSON
+
+
+
+
+	建议46： 使用traceback 获取栈信息
+
+
+	gList = ['a', 'b', 'c', 'd', 'e','f','g']
+	def f():
+		gList[5]
+	def g():
+		return h()
+	def h():
+		del gList[2]
+	    return i()
+	 def i()
+	      gList.append('i')
+	      print gList[7]
+	 if __name__ == '__main__':
+	      try:
+	          f()
+	      except IndexError as ex:
+			  print ""
+			  print ex
+			  traceback.print_exc()
+
+   信息提示有异常产生，对用户这点友好
+
+
+   程序会输出异常的完整的栈信息，包括调用顺序，异常发生的语句，错误类型
+
+
+   traceback.print_exc() 方法打印出的信息3部分
+
+   错误类型(IndexError)
+
+
+	1) traceback._print_exception(type, value, traceback[, limit[, fule]])
+
+
+	2)traceback.print_exc([limit])
+
+
+	3)traceback.extract_stack([file,[,limit]])
+
+
+
+	建议47：使用logging 记录日志信息
+
+
+	Level  
+
+	DEBUG    
+
+	INFO     
+
+	WARNING
+
+	ERROR
+
+	CRITCAL
+
+    1)logger.setLevel(), Logger.addHandler()
+	  Logger.removeHandler(), Logger.addFilter(),Logger.debug()
+	  Logger.info()
+
+	2)Handler 用来处理信息的输出
+
+
+	3）Formatter 决定log信息的格式，如%(asctime)s - %(levelname)s - %(message)s' 支持
+
+
+	4）Filter 决定哪些信息要输出
+
+
+
+	建议48：使用threading 模块 写多线程
+
+
+	import threading, time,sys
+
+	class test(threading.Thread):
+
+		def __init__(self, name, delay):
+			threading.Thread.__init__(self)
+			self.name = name
+			self.delay = delay
+
+
+		def run(self):
+			print ""
+			time.sleep(self.delay)
+			c = 0 
+			while Ture:
+			       print "This is "
+			       c = c + 1
+			       if c == 3:
+			              print "End of thread" % self.name
+			              break
+	
+t1 = test('Thread 1', 2)
+t2 = test('Thread 2', 2)
+
+
+t1.start()
+print "Wait t1 to end"
+t1.join()
+t2.start()
+print 'End of main'
+
+
+
+ 建议49：使用Queue 使多线程编程更安全
+
+
+ import Queue
+ import threading
+ import random
+
+ wirtelock = threading.Lock()
+ class Producer(threading.Thread):
+	  def __init__(self, q,con, name):
+		  super(Producer, self).__init__()
+		  self.q = q
+		  self.name = name
+		  self.con = con
+		  print "Producer" + "self.name" Started""
+	   def run(self):
+		   while 1:
+		         global writelock
+		         self.con.acquire()
+		         if self.q.full():
+					 with wirtelock:
+					      print 'Queue is full, producer wait'
+					 self.con.wait()
+				 else:
+					  value = random.randint(0,100)
+					  with writelock:
+						  print self.name + "put value"
+
+						
+
+			设计模式
+
+		object	
