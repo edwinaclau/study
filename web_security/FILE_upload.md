@@ -60,3 +60,14 @@ getimagesize函数
 
 
 
+javascript代码混淆以及加密 让攻击者，例如百度防爬虫就有部分神秘的
+js加密
+
+
+
+
+web目录权限
+
+   一般新建一个web账目，控制web权限
+
+nginx 限制php执行权限
