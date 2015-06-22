@@ -64,3 +64,50 @@ setTimeout(function() {
 ), 1000);
 
 
+
+package.json
+{
+
+}
+
+
+
+
+
+Node.js 调试命令
+
+
+run          执行脚本
+ 
+restart      重新执行脚本
+ 
+cont, c       继续执行，直到遇到下一个断点
+
+next, n
+
+step, s
+
+out, o
+
+setBreakPoint(), sb()
+
+backtrace, bt
+
+list(5)
+
+watch(expr)
+
+unwatch(expr)
+
+repl
+
+kill
+
+scripts
+
+version
+
+
+$node debug debug.js
+
+break 
