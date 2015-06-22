@@ -1,0 +1,106 @@
+//app.js
+
+var http = require('http');
+
+http.createserver(function(req, res)) {
+      res.writeHead(200,)
+	  res.write
+	  res.end
+}).listen(3000);
+
+
+http.Server的事件
+
+
+
+http.ServerRequest
+
+data:
+
+end:
+
+
+close:
+
+ServerRequest
+
+complete
+
+httpversion
+
+method
+
+url
+
+headers
+
+trailers
+
+connection
+
+socket
+
+client
+
+
+var http = require('http');
+var url = require('uril');
+var util = require('util');
+
+
+http.createServer(function(req, res) {
+		
+		
+		
+		})
+
+
+
+模板引擎
+
+
+app.set('view',__dirname + '/views');
+app.set('view engine', 'ejs');
+
+res.render('indexx', { title: 'Express'});
+
+<h1><%= title %></h1>
+<p>Welcome to <%= title %>
+
+
+ <% code %>：JavaScript 代码。
+ <%= code %>：显示替换过HTML 特殊字符的内容。
+ <%- code %>：显示原始HTML 内容。
+
+layout.ejs是一个页面布局模块
+
+app.set('view options', {
+layout: false
+		
+		});
+
+
+
+
+
+为了在Node.js 中使用MongoDB，我们需要获取一个模块。打开工程目录中的package.json，
+在 dependencies 属性中添加一行代码：
+{ 
+"name": "microblog" 
+, "version": "0.0.1" 
+, "private": true
+, "dependencies": { 
+"express": "2.5.8" 
+, "ejs": ">= 0.0.1" 
+, "mongodb": ">= 0.9.9" 
+} 
+} 
+
+
+varsettings = require('../settings'); 
+varDb = require('mongodb').Db; 
+varConnection = require('mongodb').Connection; 
+varServer = require('mongodb').Server; 
+module.exports = newDb(settings.db, newServer(settings.host, Connection.DEFAULT_ 
+PORT, {}));
+

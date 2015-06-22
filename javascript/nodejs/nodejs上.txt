@@ -1,0 +1,347 @@
+
+
+var fs = require('fs');
+
+fs.readFile()
+
+
+
+Nodejs 所有异步IO都在
+
+var EventEmitter = require('events').
+var event = new EvetEmitter()
+
+
+event.on('some_event', funciton() ) {
+     console.log('some_event occured');
+});
+
+setTimeout(function() {
+	event.emt('some_event')	;
+		}, 1000);
+
+1秒后控制台输出
+
+Nodejs 事件循环机制
+
+Nodejs在进入事件循环
+
+
+Nodejs.程序由 事件循环
+
+
+
+   
+Nodejs 
+
+
+创建及加载模块
+
+创建模块
+
+var name;
+
+exports.setName = funciton(thyName) {
+       name = thyName;
+};
+
+export.sayHello = function() {
+   name = thyName;
+}
+
+
+var myModule = require('./module');
+
+module.js 通过exports 对象把 setName 和 sayHello作为模块
+
+getmodule.js 通过require('./module')加载模块
+
+
+单此加载
+
+loadmodule.js
+
+var hello1 = require('./module');
+hello1.setName('BYVoid');
+
+var hello2 = reuqire('/module');
+hello2.setName('byvoid 2');
+
+hello1.setHello();
+覆盖
+
+
+
+创建包
+
+package.json
+
+二进制文件在bin
+
+JavaScript在lib目录下
+
+单元测试在test目录下
+
+
+
+package.json
+
+{
+   "main" : "./lib.interface.js"
+}
+
+{ 
+"name": "mypackage", 
+"description": "Sample package for CommonJS. This package demonstrates the required 
+elements of a CommonJS package.", 
+"version": "0.7.0", 
+"keywords": [ 
+"package", 
+"example" 
+], 
+"maintainers": [ 
+{ 
+"name": "Bill Smith", 
+"email": "bills@example.com", 
+} 
+], 
+"contributors": [ 
+{ 
+"name": "BYVoid", 
+"web": "http://www.byvoid.com/" 
+} 
+], 
+"bugs": { 
+"mail": "dev@example.com", 
+"web": "http://www.example.com/bugs" 
+}, 
+"licenses": [ 
+{ 
+"type": "GPLv2", 
+"url": "http://www.example.org/licenses/gpl.html" 
+} 
+], 
+"repositories": [ 
+{ 
+"type": "git", 
+"url": "http://github.com/BYVoid/mypackage.git" 
+} 
+], 
+"dependencies": { 
+"webkit": "1.2", 
+"ssl": { 
+"gnutls": ["1.0", "2.0"], 
+"openssl": "0.9.8" 
+} 
+} 
+}
+
+
+
+ 调试
+
+
+node debug debug.js
+
+
+run
+
+restart 
+
+cont, c
+
+next, n
+
+step, s
+
+out, o
+
+
+setBreakpoint(), sb()
+
+
+核心模块是Node.js心脏
+
+全局对象
+
+常用工具
+
+事件机制
+
+文件系统访问
+
+HTTP服务器与客户端
+
+process 是一个全局变量，global对象属性
+
+描述当前Node.js进程状态对象
+
+Node.js进程只有一个线程，任何时刻都只有一个事件在执行
+
+function dosomething(args, callback) {
+       somethingComlicated(args);
+	   callback();
+}
+
+doSomething(function onEnd) {
+     ccompute();
+});
+
+
+
+util.inherits
+
+var util = require('util');
+
+function Base() {
+     this.name = 'base';
+	 this.base = 1991;
+
+
+	 this.sayHello = function() {
+	       console('');
+	 }
+}
+
+Base.prototype.showName = function()
+	console(this.name);
+
+
+
+var events = require('events');
+
+var emitter = new events.EventEmitter()
+
+
+emitter.on('someEvent', function(arg1, )) {
+     console.log('listener1', arg1, arg2);
+}
+
+emitter.on('someEvent', function(arg1, arg2)) {
+    console.log('listener2', arg1, arg2);
+}
+
+
+
+
+EventEmitter.on(event, listener)
+
+
+EventEmitter.emit(event, [arg1], [arg2])
+
+EventEmitter.once(event, listener)
+
+EventEmitter.removeListener(event, listener)
+
+EventEmitter.removeAllListeners([event])
+
+
+error 事件
+
+
+
+fs.readFile
+
+var fs = require('fs');
+
+fs.readFile('content.txt', function(err, data)) {
+        if (err) {
+		     console.error(err);
+		} else {
+		    console.log(data);
+		}
+}
+
+var fs = require('fs');
+
+fs.readFile('content.txt','utf-')
+
+
+
+fs.readFileSync
+
+打开文件  fs.open(path,flags, [mode], [callback(err, 
+fd)]) 
+fs.openSync(path, flags, [mode]) 
+关闭文件  fs.close(fd, [callback(err)])  fs.closeSync(fd) 
+4.4文件系统fs  69 
+1 
+2 
+3 
+5
+7 
+10 
+8
+9 
+4 
+6
+（续）
+功 能  异步函数  同步函数
+读取文件（文件描
+述符）
+fs.read(fd,buffer,offset,length,position, 
+[callback(err, bytesRead, buffer)]) 
+fs.readSync(fd, buffer, offset, 
+length, position) 
+写入文件（文件描
+述符）
+fs.write(fd,buffer,offset,length,position, 
+[callback(err, bytesWritten, buffer)]) 
+fs.writeSync(fd, buffer, offset, 
+length, position) 
+读取文件内容  fs.readFile(filename,[encoding],[callba
+ck(err, data)]) 
+fs.readFileSync(filename, 
+[encoding]) 
+写入文件内容  fs.writeFile(filename, data,[encoding], 
+[callback(err)]) 
+fs.writeFileSync(filename, data, 
+[encoding]) 
+删除文件  fs.unlink(path, [callback(err)])  fs.unlinkSync(path) 
+创建目录  fs.mkdir(path, [mode], [callback(err)]) fs.mkdirSync(path, [mode]) 
+删除目录  fs.rmdir(path, [callback(err)])  fs.rmdirSync(path) 
+读取目录  fs.readdir(path, [callback(err, files)]) fs.readdirSync(path) 
+获取真实路径  fs.realpath(path, [callback(err, 
+resolvedPath)]) 
+fs.realpathSync(path) 
+更名  fs.rename(path1, path2, [callback(err)]) fs.renameSync(path1, path2) 
+截断  fs.truncate(fd, len, [callback(err)]) fs.truncateSync(fd, len) 
+更改所有权  fs.chown(path, uid, gid, [callback(err)]) fs.chownSync(path, uid, gid) 
+更改所有权（文件
+描述符）
+fs.fchown(fd, uid, gid, [callback(err)]) fs.fchownSync(fd, uid, gid) 
+更改所有权（不解
+析符号链接）
+fs.lchown(path, uid, gid, [callback(err)]) fs.lchownSync(path, uid, gid) 
+更改权限  fs.chmod(path, mode, [callback(err)]) fs.chmodSync(path, mode) 
+更改权限（文件描
+述符）
+fs.fchmod(fd, mode, [callback(err)]) fs.fchmodSync(fd, mode) 
+更改权限（不解析
+符号链接）
+fs.lchmod(path, mode, [callback(err)]) fs.lchmodSync(path, mode) 
+获取文件信息  fs.stat(path, [callback(err, stats)]) fs.statSync(path) 
+获取文件信息（文
+件描述符）
+fs.fstat(fd, [callback(err, stats)]) fs.fstatSync(fd) 
+获取文件信息（不
+解析符号链接）
+fs.lstat(path, [callback(err, stats)]) fs.lstatSync(path) 
+创建硬链接  fs.link(srcpath, dstpath, [callback(err)]) fs.linkSync(srcpath, dstpath) 
+创建符号链接  fs.symlink(linkdata, path, [type], 
+[callback(err)]) 
+fs.symlinkSync(linkdata, path, 
+[type]) 
+读取链接  fs.readlink(path, [callback(err, 
+linkString)]) 
+fs.readlinkSync(path) 
+修改文件时间戳  fs.utimes(path, atime, mtime, [callback 
+(err)]) 
+fs.utimesSync(path, atime, mtime) 
+修改文件时间戳
+（文件描述符）
+fs.futimes(fd, atime, mtime, [callback 
+(err)]) 
+fs.futimesSync(fd, atime, mtime) 
+同步磁盘缓存  fs.fsync(fd, [callback(err)])  fs.fsyncSync(fd)
+
