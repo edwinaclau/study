@@ -135,3 +135,24 @@ deferred对象的多种方法，下面做一个总结：
 
 这个方法也是用来指定回调函数的，
 它的作用是，不管调用的是deferred.resolve()还是deferred.reject()，最后总是执行。
+
+
+
+
+这两个API语法几乎一样，但是有着很大的差别。deferred.promise()是Deferred实例的一个方法，他返回一个Deferred.Promise实例。一个Deferred.Promise对象可以理解为是deferred对象的一个视图，它只包含deferred对象的一组方法，包括：done(),then(),fail(),isResolved(), isRejected(), always(),这些方法只能观察一个deferred的状态，而无法更改deferred对象的内在状态。这非常适合于API的封装。例如一个deferred对象的持有者可以根据自己的需要控制deferred状态的状态（resolved或者rejected），但是可以把这个deferred对象的Promise对象返回给其它的观察者，观察者只能观察状态的变化绑定相应的回调函数，但是无法更改deferred对象的内在状态，从而起到很好的隔离保护作用。 
+
+Js代码  收藏代码
+$(function(){  
+    //  
+    var deferred = $.Deferred();  
+    var promise = deferred.promise();  
+      
+    var doSomething = function(promise) {  
+        promise.done(function(){  
+            alert('deferred resolved.');  
+        });  
+    };  
+      
+    deferred.resolve();  
+    doSomething(promise);  
+})  
