@@ -1,6 +1,6 @@
 memcache协议中有两种方式可以传送数据：文本行(text lines)和非结构化数据(unstructured data)。text lines
 
-
+1
 
 
 

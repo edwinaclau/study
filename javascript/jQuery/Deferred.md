@@ -141,7 +141,7 @@ deferred对象的多种方法，下面做一个总结：
 
 这两个API语法几乎一样，但是有着很大的差别。deferred.promise()是Deferred实例的一个方法，他返回一个Deferred.Promise实例。一个Deferred.Promise对象可以理解为是deferred对象的一个视图，它只包含deferred对象的一组方法，包括：done(),then(),fail(),isResolved(), isRejected(), always(),这些方法只能观察一个deferred的状态，而无法更改deferred对象的内在状态。这非常适合于API的封装。例如一个deferred对象的持有者可以根据自己的需要控制deferred状态的状态（resolved或者rejected），但是可以把这个deferred对象的Promise对象返回给其它的观察者，观察者只能观察状态的变化绑定相应的回调函数，但是无法更改deferred对象的内在状态，从而起到很好的隔离保护作用。 
 
-Js代码  收藏代码
+
 $(function(){  
     //  
     var deferred = $.Deferred();  
@@ -156,3 +156,91 @@ $(function(){
     deferred.resolve();  
     doSomething(promise);  
 })  
+
+
+
+
+deferred.promise()也可以接受一个object参数，此时传入的object将被赋予Promise的方法，并作为结果返回。 
+
+
+// Existing object  
+var obj = {  
+  hello: function( name ) {  
+    alert( "Hello " + name );  
+  }  
+},  
+// Create a Deferred  
+defer = $.Deferred();  
+  
+// Set object as a promise  
+defer.promise( obj );  
+  
+// Resolve the deferred  
+defer.resolve( "John" );  
+  
+// Use the object as a Promise  
+obj.done(function( name ) {  
+  this.hello( name ); // will alert "Hello John"  
+}).hello( "Karl" ); // will alert "Hello Karl"
+
+
+
+
+deferred.always()
+
+当Deferred（延迟）对象解决或拒绝时，调用添加处理程序。
+deferred.done()
+
+当Deferred（延迟）对象解决时，调用添加处理程序。
+deferred.fail()
+
+当Deferred（延迟）对象拒绝时，调用添加处理程序。
+deferred.isRejected()
+
+确定一个Deferred（延迟）对象是否已被拒绝。
+deferred.isResolved()
+
+确定一个Deferred（延迟）对象是否已被解决。
+deferred.notify()
+
+根据给定的 args参数 调用Deferred（延迟）对象上进行中的回调 （progressCallbacks）。
+deferred.notifyWith()
+
+根据给定的上下文（context）和args递延调用Deferred（延迟）对象上进行中的回调（progressCallbacks ）。
+deferred.pipe()
+
+实用的方法来过滤 and/or 链Deferreds。
+deferred.progress()
+
+当Deferred（延迟）对象生成进度通知时，调用添加处理程序。
+deferred.promise()
+
+返回Deferred(延迟)的Promise（承诺）对象。
+deferred.reject()
+
+拒绝Deferred（延迟）对象，并根据给定的args参数调用任何失败回调函数（failCallbacks）。
+deferred.rejectWith()
+
+拒绝Deferred（延迟）对象，并根据给定的 context和args参数调用任何失败回调函数（failCallbacks）。
+deferred.resolve()
+
+解决Deferred（延迟）对象，并根据给定的args参数调用任何完成回调函数（doneCallbacks）。
+deferred.resolveWith()
+
+解决Deferred（延迟）对象，并根据给定的 context和args参数调用任何完成回调函数（doneCallbacks）。
+deferred.state()
+
+确定一个Deferred（延迟）对象的当前状态。
+deferred.then()
+
+当Deferred（延迟）对象解决，拒绝或仍在进行中时，调用添加处理程序。
+jQuery.Deferred()
+
+一个构造函数，返回一个链式实用对象方法来注册多个回调，回调队列， 调用回调队列，并转达任何同步或异步函数的成功或失败状态。
+Also in: Core
+jQuery.when()
+
+提供一种方法来执行一个或多个对象的回调函数， Deferred(延迟)对象通常表示异步事件。
+.promise()
+
+返回一个 Promise 对象用来观察当某种类型的所有行动绑定到集合，排队与否还是已经完成。
