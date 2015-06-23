@@ -37,6 +37,86 @@ next(上课)
 
 
 创建三个$.Callbacks对象，分别表示成功，失败，处理中三种状态
+
+
+
+先来看看 $.callbacks('once memory'),
+   
+
+
+// A sample logging function to be added to a callbacks list
+var foo = function( value ) {
+  console.log( "foo: " + value );
+};
+ 
+// Another function to also be added to the list
+var bar = function( value ) {
+  console.log( "bar: " + value );
+};
+ 
+var callbacks = $.Callbacks();
+ 
+// Add the function "foo" to the list
+callbacks.add( foo );
+ 
+// Fire the items on the list
+callbacks.fire( "hello" );
+// Outputs: "foo: hello"
+ 
+// Add the function "bar" to the list
+callbacks.add( bar );
+ 
+// Fire the items on the list again
+callbacks.fire( "world" );
+ 
+// Outputs:
+// "foo: world"
+// "bar: world"            
+
+
+$.Callbacks('once memory').fire
+
+
+
+
+
+
+
+// A sample logging function to be added to a callbacks list
+var foo = function( value ) {
+  console.log( "foo:" + value );
+};
+ 
+var callbacks = $.Callbacks();
+ 
+// Add the function "foo" to the list
+callbacks.add( foo );
+ 
+// Fire the items on the list
+callbacks.fire( "hello" ); // Outputs: "foo: hello"
+callbacks.fire( "world" ); // Outputs: "foo: world"
+ 
+// Add another function to the list
+var bar = function( value ){
+  console.log( "bar:" + value );
+};
+ 
+// Add this function to the list
+callbacks.add( bar );
+ 
+// Fire the items on the list again
+callbacks.fire( "hello again" );
+// Outputs:
+// "foo: hello again"
+// "bar: hello again"
+
+
+
+resolve、 rejct、notify
+
+Defferred中定义了三种动作，resolve（解决）、reject（拒绝）、notify（通知），对应Callbacks对象的fire动作。
+
+
 创建了一个promise对象，具有state、always、then、primise方法
 通过扩展primise对象生成最终的Deferred对象，返回该对象
 
@@ -50,3 +130,8 @@ deferred对象的多种方法，下面做一个总结：
 　　（7） $.when() 为多个操作指定回调函数。
 除了这些方法以外，deferred对象还有二个重要方法，上面的教程中没有涉及到。
 　　（8）deferred.then()
+
+    deferred.always()
+
+这个方法也是用来指定回调函数的，
+它的作用是，不管调用的是deferred.resolve()还是deferred.reject()，最后总是执行。
