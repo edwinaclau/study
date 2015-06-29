@@ -1,10 +1,6 @@
 #zend
 
 
-
-
-
-
     PHP_FUNCTION(count)
     {
     zval *array;

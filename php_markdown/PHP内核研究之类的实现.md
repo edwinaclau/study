@@ -2,115 +2,113 @@
 
 
 
-class student {}
-
-```c
-
-unticked_class_declaration_statement:
-                class_entry_type T_STRING extends_from
-                        { zend_do_begin_class_declaration(&$1, &$2, &$3 TSRMLS_CC); }
-                        implements_list
-                        '{'
-                                class_statement_list
-                        '}' { zend_do_end_class_declaration(&$1, &$2 TSRMLS_CC); }
-        |       interface_entry T_STRING
-                        { zend_do_begin_class_declaration(&$1, &$2, NULL TSRMLS_CC); }
-                        interface_extends_list
-                        '{'
-                                class_statement_list
-                        '}' { zend_do_end_class_declaration(&$1, &$2 TSRMLS_CC); }
-;
-class_entry_type:
-                T_CLASS                 { $$.u.opline_num = CG(zend_lineno); $$.u.EA.type = 0; }
-        |       T_ABSTRACT T_CLASS { $$.u.opline_num = CG(zend_lineno); $$.u.EA.type = ZEND_ACC_EXPLICIT_ABSTRACT_CLASS; }
-        |       T_FINAL T_CLASS { $$.u.opline_num = CG(zend_lineno); $$.u.EA.type = ZEND_ACC_FINAL_CLASS; }
-;
-
-
-```
+    class student {}
+    
+    
+    unticked_class_declaration_statement:
+    class_entry_type T_STRING extends_from
+    { zend_do_begin_class_declaration(&$1, &$2, &$3 TSRMLS_CC); }
+    implements_list
+    '{'
+    class_statement_list
+    '}' { zend_do_end_class_declaration(&$1, &$2 TSRMLS_CC); }
+    |   interface_entry T_STRING
+    { zend_do_begin_class_declaration(&$1, &$2, NULL TSRMLS_CC); }
+    interface_extends_list
+    '{'
+    class_statement_list
+    '}' { zend_do_end_class_declaration(&$1, &$2 TSRMLS_CC); }
+    ;
+    class_entry_type:
+    T_CLASS { $$.u.opline_num = CG(zend_lineno); $$.u.EA.type = 0; }
+    |   T_ABSTRACT T_CLASS { $$.u.opline_num = CG(zend_lineno); $$.u.EA.type = ZEND_ACC_EXPLICIT_ABSTRACT_CLASS; }
+    |   T_FINAL T_CLASS { $$.u.opline_num = CG(zend_lineno); $$.u.EA.type = ZEND_ACC_FINAL_CLASS; }
+    ;
 
 
-T_CLASS,T_ABSTRACT T_CLASS和T_FINAL 是PHP的三种类的模式
-T_CLASS:是一个标准类.
-T_ABSTRACT:是声明一个抽象类
-T_FINAL:声明一个不容许继承和扩展的类.
-当然还有interface
-他们定义在Zend/zend_complie.h的文件中
-
-```c
-#define ZEND_ACC_IMPLICIT_ABSTRACT_CLASS    0x10    //没有声明为抽象,但是内部有抽象方法
-#define ZEND_ACC_EXPLICIT_ABSTRACT_CLASS    0x20   //抽象
-#define ZEND_ACC_FINAL_CLASS                0x40  //Final
-#define ZEND_ACC_INTERFACE                  0x80 //接口
-```
 
 
-这三个规则 记录当前行,并设置类的类型.
-在定义类的时候调用了 zend_do_begin_class_declaration和zend_do_end_class_declaration两个方法,
-类的关键字 ,类的名称和所继承的父类作为参数传递给这两个函数.
-zend_do_begin_class_declaration是用来声明类,设置类型,创建一个
-zend_do_end_class_declaration用来处理类中的属性及方法.
-在讲到两个函数之前一定先要说说 保存类的结构zend_class_entry
-它定义在Zend/zend.h中
+
+#####T_CLASS,T_ABSTRACT T_CLASS和T_FINAL 是PHP的三种类的模式
+#####T_CLASS:是一个标准类.
+#####T_ABSTRACT:是声明一个抽象类
+#####T_FINAL:声明一个不容许继承和扩展的类.
+#####当然还有interface
+#####他们定义在Zend/zend_complie.h的文件中
+
+    #define ZEND_ACC_IMPLICIT_ABSTRACT_CLASS0x10//没有声明为抽象,但是内部有抽象方法
+    #define ZEND_ACC_EXPLICIT_ABSTRACT_CLASS0x20   //抽象
+    #define ZEND_ACC_FINAL_CLASS0x40  //Final
+    #define ZEND_ACC_INTERFACE  0x80 //接口
 
 
-```c
-struct _zend_class_entry {
-        char type;
-        char *name;//类名称
-        zend_uint name_length;
-        struct _zend_class_entry *parent; //所继承的父类
-        int refcount;  //引用数
-        zend_bool constants_updated; //类的类型
-        zend_uint ce_flags;//类的类型 抽象?接口?Final?
-        HashTable function_table;  //函数表
-        HashTable default_properties; //属性
-        HashTable properties_info;  //函数的访问级别
-        HashTable default_static_members; //静态成员
-        HashTable *static_members; //静态成员,当是用户声明的类等于default_static_members,内置的类为NULL
-        HashTable constants_table;
-        const struct _zend_function_entry *builtin_functions;
-       //眼熟吗???对的.魔术函数在这里哦..
-        union _zend_function *constructor;
-        union _zend_function *destructor;
-        union _zend_function *clone;
-        union _zend_function *__get;
-        union _zend_function *__set;
-        union _zend_function *__unset;
-        union _zend_function *__isset;
-        union _zend_function *__call;
-        union _zend_function *__callstatic;
-        union _zend_function *__tostring;
-        union _zend_function *serialize_func;
-        union _zend_function *unserialize_func;
- 
-        zend_class_iterator_funcs iterator_funcs;
- 
-        /* handlers */
-        zend_object_value (*create_object)(zend_class_entry *class_type TSRMLS_DC);
-        zend_object_iterator *(*get_iterator)(zend_class_entry *ce, zval *object, int by_ref TSRMLS_DC);
-        int (*interface_gets_implemented)(zend_class_entry *iface, zend_class_entry *class_type TSRMLS_DC); /* a class implements this interface */
-        union _zend_function *(*get_static_method)(zend_class_entry *ce, char* method, int method_len TSRMLS_DC);
- 
-        /* serializer callbacks */
-        int (*serialize)(zval *object, unsigned char **buffer, zend_uint *buf_len, zend_serialize_data *data TSRMLS_DC);
-        int (*unserialize)(zval **object, zend_class_entry *ce, const unsigned char *buf, zend_uint buf_len, zend_unserialize_data *data TSRMLS_DC);
- 
-        zend_class_entry **interfaces;
-        zend_uint num_interfaces;
- 
-        char *filename;//声明类的文件地址
-        zend_uint line_start;//类开始行
-        zend_uint line_end;//类结束行
-        char *doc_comment;
-        zend_uint doc_comment_len;
- 
-        struct _zend_module_entry *module;
-};
-```
-清楚了这个结构之后 下面来看看zend_do_begin_class_declaration函数
 
-```c
+####这三个规则 记录当前行,并设置类的类型.
+####在定义类的时候调用了 ####zend_do_begin_class_declaration和zend_do_end_class_declaration两个方法,
+####类的关键字 ,类的名称和所继承的父类作为参数传递给这两个函数.
+####zend_do_begin_class_declaration是用来声明类,设置类型,创建一个
+####zend_do_end_class_declaration用来处理类中的属性及方法.
+####在讲到两个函数之前一定先要说说 保存类的结构####zend_class_entry
+####它定义在Zend/zend.h中
+
+
+
+    struct _zend_class_entry {
+       char type;
+       char *name;//类名称
+       zend_uint name_length;
+       struct _zend_class_entry *parent; //所继承的父类
+    int refcount;  //引用数
+    zend_bool constants_updated; //类的类型
+    zend_uint ce_flags;//类的类型 抽象?接口?Final?
+    HashTable function_table;  //函数表
+    HashTable default_properties; //属性
+    HashTable properties_info;  //函数的访问级别
+    HashTable default_static_members; //静态成员
+    HashTable *static_members; //静态成员,当是用户声明的类等于default_static_members,内置的类为NULL
+    HashTable constants_table;
+    const struct _zend_function_entry *builtin_functions;
+       //魔术函数在这里哦..
+    union _zend_function *constructor;
+    union _zend_function *destructor;
+    union _zend_function *clone;
+    union _zend_function *__get;
+    union _zend_function *__set;
+    union _zend_function *__unset;
+    union _zend_function *__isset;
+    union _zend_function *__call;
+    union _zend_function *__callstatic;
+    union _zend_function *__tostring;
+    union _zend_function *serialize_func;
+    union _zend_function *unserialize_func;
+     
+    zend_class_iterator_funcs iterator_funcs;
+     
+    /* handlers */
+    zend_object_value (*create_object)(zend_class_entry *class_type TSRMLS_DC);
+    zend_object_iterator *(*get_iterator)(zend_class_entry *ce, zval *object, int by_ref TSRMLS_DC);
+    int (*interface_gets_implemented)(zend_class_entry *iface, zend_class_entry *class_type TSRMLS_DC); /* a class implements this interface */
+    union _zend_function *(*get_static_method)(zend_class_entry *ce, char* method, int method_len TSRMLS_DC);
+     
+    /* serializer callbacks */
+    int (*serialize)(zval *object, unsigned char **buffer, zend_uint *buf_len, zend_serialize_data *data TSRMLS_DC);
+    int (*unserialize)(zval **object, zend_class_entry *ce, const unsigned char *buf, zend_uint buf_len, zend_unserialize_data *data TSRMLS_DC);
+     
+    zend_class_entry **interfaces;
+    zend_uint num_interfaces;
+     
+    char *filename;//声明类的文件地址
+    zend_uint line_start;//类开始行
+    zend_uint line_end;//类结束行
+    char *doc_comment;
+    zend_uint doc_comment_len;
+     
+    struct _zend_module_entry *module;
+    };
+
+zend_do_begin_class_declaration函数
+
+
 void zend_do_begin_class_declaration(const znode *class_token, znode *class_name, const znode *parent_class_name TSRMLS_DC) /* {{{ */
 {
         zend_op *opline;
@@ -216,11 +214,12 @@ opline->op2.u.constant.value.str.val = lcname;
                 CG(doc_comment_len) = 0;
         }
 }
-```
-```c
+
 lcname = zend_str_tolower_dup(class_name->u.constant.value.str.val, class_name->u.constant.value.str.len);
 ```
 把所有类全部转换为小写处理.这就是为什么PHP大小写不敏感的原因.
+
+
 ```c
 if (!(strcmp(lcname, “self”) && strcmp(lcname, “parent”))) {
 efree(lcname);
@@ -246,6 +245,3 @@ zend_initialize_class_data(new_class_entry, 1 TSRMLS_CC);函数是用来初始�
 EX_T(opline->result.u.var).class_entry = do_bind_class(opline, EG(class_table), 0 TSRMLS_CC) ;
 do_bind_class会将此类放到class_table中.当然 ,在这个函数里还会判断该类是否存在.不存在会抛出错误
 Internal Zend error – Missing class information for %s
-如果存在 则会添加成功
-那么到这里类就创建成功了.
-下一张节就要深入到 类内部了哦…
