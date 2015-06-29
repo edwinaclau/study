@@ -19,7 +19,7 @@ $programmer = $person; //数组没有被复制
 
 ```
 $programmer---->   programmer_array
-    $person   ----->   programmer_array
+$person   ----->   programmer_array
 ```
 
 

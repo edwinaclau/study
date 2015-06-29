@@ -1,4 +1,5 @@
 ```c
+
 PHP_FUNCTION(count)
 {
         zval *array;
