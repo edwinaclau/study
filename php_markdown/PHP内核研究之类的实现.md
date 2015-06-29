@@ -109,15 +109,15 @@
 zend_do_begin_class_declaration函数
 
 
-void zend_do_begin_class_declaration(const znode *class_token, znode *class_name, const znode *parent_class_name TSRMLS_DC) /* {{{ */
-{
-        zend_op *opline;
-        int doing_inheritance = 0;
-        zend_class_entry *new_class_entry;
-        char *lcname;
-        int error = 0;
-        zval **ns_name;
- 
+    void zend_do_begin_class_declaration(const znode *class_token, znode *class_name, const znode *parent_class_name TSRMLS_DC) /* {{{ */
+    {
+    zend_op *opline;
+    int doing_inheritance = 0;
+    zend_class_entry *new_class_entry;
+    char *lcname;
+    int error = 0;
+    zval **ns_name;
+     
         if (CG(active_class_entry)) {
                 zend_error(E_COMPILE_ERROR, "Class declarations may not be nested");
                 return;
