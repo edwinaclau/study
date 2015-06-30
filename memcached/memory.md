@@ -1,26 +1,26 @@
-先再说明一下，我本次分析的memcached版本是1.4.20，有些旧的版本关于内存管理的机制和数据结构与1.4.20有一定的差异（本文中会提到）。
 
-一）模型分析
+
+##一）模型分析
  在开始解剖memcached关于内存管理的源代码之前，先宏观上分析一下memcached内存管理的模型是怎样子的：
 
 提个建议，我觉得memcached内存管理的模型与我们平时做作业的作业本“画格子给我们往格子里面写字”的逻辑很像，一本本作业本就是我们的内存空间，而我们往里写的字就是我们要存下来的数据，所以分析的时候可以想像一下用方格作业本写字的情景。
 
-1）首先，先介绍memcached中关于内存管理的几个重要的概念：
+* 1）首先，先介绍memcached中关于内存管理的几个重要的概念：
 
-a）slab、chunk
+* a）slab、chunk
 
-slab是一块内存空间，默认大小为1M，而memcached会把一个slab分割成一个个chunk，比如说1M的slab分成两个0.5M的chunk，所以说slab和chunk其实都是代表实质的内存空间，chunk只是把slab分割后的更小的单元而已。
+* slab是一块内存空间，默认大小为1M，而memcached会把一个slab分割成一个个chunk，比如说1M的slab分成两个0.5M的chunk，所以说slab和chunk其实都是代表实质的内存空间，chunk只是把slab分割后的更小的单元而已。
 slab就相当于作业本中的“页”，而chunk则是把一页画成一个个格子中的“格”。
 
-b）item
+* b）item
 
-item是我们要保存的数据，例如php代码：$memcached->set(“name”,”abc”,30);代表我们把一个key为name，value为abc的键值对保存在内存中30秒，那么上述中的”name”, “abc”, 30这些数据实质都是我们要memcached保存下来的数据， memcached会把这些数据打包成一个item，这个item其实是memcached中的一个结构体（当然结构远不止上面提到的三个字段这么简单），把打包好的item保存起来，完成工作。而item保存在哪里？其实就是上面提到的”chunk”，一个item保存在一个chunk中。
+##item是我们要保存的数据，例如php代码：$memcached->set(“name”,”abc”,30);代表我们把一个key为name，value为abc的键值对保存在内存中30秒，那么上述中的”name”, “abc”, 30这些数据实质都是我们要memcached保存下来的数据， memcached会把这些数据打包成一个item，这个item其实是memcached中的一个结构体（当然结构远不止上面提到的三个字段这么简单），把打包好的item保存起来，完成工作。而item保存在哪里？其实就是上面提到的”chunk”，一个item保存在一个chunk中。
 
-chunk是实质的内存空间，item是要保存的东西，所以关系是：item是往chunk中塞的。
+##chunk是实质的内存空间，item是要保存的东西，所以关系是：item是往chunk中塞的。
 
-还是拿作业本来比喻，item就是相当于我们要写的“字”，把它写到作业本某一“页（slab）”中的“格子（chunk）”里。
+##还是拿作业本来比喻，item就是相当于我们要写的“字”，把它写到作业本某一“页（slab）”中的“格子（chunk）”里。
 
-c）slabclass
+* c）slabclass
 
 通过上面a）b）我们知道，slab（都假设为1M）会割成一个个chunk，而item往chunk中塞。
 

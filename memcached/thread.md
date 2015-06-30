@@ -1,75 +1,75 @@
 一）模型分析
 
-memcached到底是如何处理我们的网络连接的？
+####memcached到底是如何处理我们的网络连接的？
 
-memcached通过epoll（使用libevent，下面具体再讲）实现异步的服务器，但仍然使用多线程，主要有两种线程，分别是“主线程”和“worker线程”，一个主线程，多个worker线程。
+####memcached通过epoll（使用libevent，下面具体再讲）实现异步的服务器，但仍然使用多线程，主要有两种线程，分别是“主线程”和“worker线程”，一个主线程，多个worker线程。
 
-主线程负责监听网络连接，并且accept连接。当监听到连接时，accept后，连接成功，把相应的client fd丢给其中一个worker线程。
+####主线程负责监听网络连接，并且accept连接。当监听到连接时，accept后，连接成功，把相应的client fd丢给其中一个worker线程。
 worker线程接收主线程丢过来的client fd，加入到自己的epoll监听队列，负责处理该连接的读写事件。
 
-所以说，主线程和worker线程都各自有自己的监听队列，主线程监听的仅是listen fd，而worker线程监听的则是主线程accept成功后丢过来的client fd。
+####所以说，主线程和worker线程都各自有自己的监听队列，主线程监听的仅是listen fd，而worker线程监听的则是主线程accept成功后丢过来的client fd。
 
-memcached使用libevent实现事件监听。在这简单介绍一下libevent的使用，一般有以下几步：
+####memcached使用libevent实现事件监听。在这简单介绍一下libevent的使用，一般有以下几步：
 
-1）event_base = event_init(); 初始化事件基地。
+* 1）event_base = event_init(); 初始化事件基地。
 
-2）event_set(event, fd, event_flags, event_handler, args); 创建事件event，fd为要监听的fd，event_flags为监听的事件类型，event_handler为事件发生后的处理函数，args为调用处理函数时传递的参数。
+* 2）event_set(event, fd, event_flags, event_handler, args); 创建事件event，fd为要监听的fd，event_flags为监听的事件类型，event_handler为事件发生后的处理函数，args为调用处理函数时传递的参数。
 
-3）event_base_set(event_base, event); 为创建的事件event指定事件基地。
+* 3）event_base_set(event_base, event); 为创建的事件event指定事件基地。
 
-4）event_add(event, timeval); 把事件加入到事件基地进行监听
+* 4）event_add(event, timeval); 把事件加入到事件基地进行监听
 
-5）event_base_loop(event_base, flag); 进入事件循环，即epoll_wait
+* 5）event_base_loop(event_base, flag); 进入事件循环，即epoll_wait
 
-memcached主线程和worker线程各有自己的监听队列，故有主线程和每个worker线程都有一个独立的event_base，事件基地。
+##memcached主线程和worker线程各有自己的监听队列，故有主线程和每个worker线程都有一个独立的event_base，事件基地。
 
-了解libevent的简单使用后，我们回到memcache线程模型上，先看看下面的图片了解它线程模型的构建逻辑：
+##了解libevent的简单使用后，我们回到memcache线程模型上，先看看下面的图片了解它线程模型的构建逻辑：
 
  
 
-memcached线程模型
-memcached线程模型
+##memcached线程模型
 
-1）主线程首先为自己分配一个event_base，用于监听连接，即listen fd。
 
-2）主线程创建n个worker线程，同时每个worker线程也分配了独立的event_base。
+* 1）主线程首先为自己分配一个event_base，用于监听连接，即listen fd。
 
-3）每个worker线程通过管道方式与其它线程（主要是主线程）进行通信，调用pipe函数，产生两个fd，一个是管道写入fd，一个是管道读取fd。worker线程把管道读取fd加到自己的event_base，监听管道读取fd的可读事件，即当主线程往某个线程的管道写入fd写数据时，触发事件。
+* 2）主线程创建n个worker线程，同时每个worker线程也分配了独立的event_base。
 
-4）主线程监听到有一个连接到达时，accept连接，产生一个client fd，然后选择一个worker线程，把这个client fd包装成一个CQ_ITEM对象（该结构体下面再详细讲，这个对象实质是起主线程与worker线程之间通信媒介的作用，主线程把client fd丢给worker线程往往不止“client fd”这一个参数，还有别的参数，所以这个CQ_ITEM相当于一个“参数对象”，把参数都包装在里面），然后压到worker线程的CQ_ITEM队列里面去（每个worker线程有一个CQ_ITEM队列），
+* 3）每个worker线程通过管道方式与其它线程（主要是主线程）进行通信，调用pipe函数，产生两个fd，一个是管道写入fd，一个是管道读取fd。worker线程把管道读取fd加到自己的event_base，监听管道读取fd的可读事件，即当主线程往某个线程的管道写入fd写数据时，触发事件。
+
+* 4）主线程监听到有一个连接到达时，accept连接，产生一个client fd，然后选择一个worker线程，把这个client fd包装成一个CQ_ITEM对象（该结构体下面再详细讲，这个对象实质是起主线程与worker线程之间通信媒介的作用，主线程把client fd丢给worker线程往往不止“client fd”这一个参数，还有别的参数，所以这个CQ_ITEM相当于一个“参数对象”，把参数都包装在里面），然后压到worker线程的CQ_ITEM队列里面去（每个worker线程有一个CQ_ITEM队列），
  同时主线程往选中的worker线程的管道写入fd中写入一个字符“c”（触发worker线程）。
 
-5）主线程往选中的worker线程的管道写入fd中写入一个字符“c”，则worker线程监听到自己的管道读取fd可读，触发事件处理，而此是的事件处理是：从自己的CQ_ITEM队列中取出CQ_ITEM对象（相当于收信，看看主线程给了自己什么东西），从4）可知，CQ_ITEM对象中包含client fd，worker线程把此client fd加入到自己的event_base，从此负责该连接的读写工作。
+* 5）主线程往选中的worker线程的管道写入fd中写入一个字符“c”，则worker线程监听到自己的管道读取fd可读，触发事件处理，而此是的事件处理是：从自己的CQ_ITEM队列中取出CQ_ITEM对象（相当于收信，看看主线程给了自己什么东西），从4）可知，CQ_ITEM对象中包含client fd，worker线程把此client fd加入到自己的event_base，从此负责该连接的读写工作。
 
-二）代码实现
+##二）代码实现
 
-下面我们看一下memcached线程模型的具体代码实现：
+##下面我们看一下memcached线程模型的具体代码实现：
 
-1）首先看下main函数中关键的几行：
-1. //main_$1
-2.main_base = event_init(); //全局的main_base变量
-3. 
-4.//main_$2
-5.//初始化主线程，参数是worker线程个数，和当前主线程的event_base
-6.thread_init(settings.num_threads, main_base);
-7. 
-8.//main_$3 
-9.//建立sockets
-10.if (settings.port && server_sockets(settings.port, tcp_transport,
-11. 
-12.    portnumber_file)) {
-13.        vperror("failed to listen on TCP port %d", settings.port);
-14.        exit(EX_OSERR);
-15.}
-16. 
-17.//main_$4
-18. 
-19.//进入事件循环
-20. 
-21.if (event_base_loop(main_base, 0) != 0) {
-22.    retval = EXIT_FAILURE;
-23.}
-
+首先看下main函数中关键的几行：
+    1. //main_$1
+    2.main_base = event_init(); //全局的main_base变量
+    3. 
+    4.//main_$2
+    5.//初始化主线程，参数是worker线程个数，和当前主线程的event_base
+    6.thread_init(settings.num_threads, main_base);
+    7. 
+    8.//main_$3 
+    9.//建立sockets
+    10.if (settings.port && server_sockets(settings.port, tcp_transport,
+    11. 
+    12.portnumber_file)) {
+    13.vperror("failed to listen on TCP port %d", settings.port);
+    14.exit(EX_OSERR);
+    15.}
+    16. 
+    17.//main_$4
+    18. 
+    19.//进入事件循环
+    20. 
+    21.if (event_base_loop(main_base, 0) != 0) {
+    22.retval = EXIT_FAILURE;
+    23.}
+    
 
 上述代码中：
 
