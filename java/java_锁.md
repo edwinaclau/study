@@ -15,6 +15,8 @@ public synchronized boolean add(E e) {
 
 ```
 
+
+
 关键synchronized 保证了每次只有一个线程可以访问对象实例
 
 确保多线程环境对象内部数据的一致性
