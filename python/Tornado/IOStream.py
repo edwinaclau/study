@@ -57,3 +57,28 @@ Contents:
   read_util    read_bytes
 
   self._run_callback(callback, self._consume(data_length)) 执行回调
+
+
+  _read_to_buffer 过程截取数据的方法不同
+
+  read_until 读取到delimiter终止
+
+
+
+  read_unitl_regex 相当于 delimiter 正则 表达式的read_until
+
+  read_until_close
+
+  read_until_close
+
+  write ---> buffer
+
+  write_buffer
+
+  def _handle_events(self, fd, events):
+
+
+  def _add_io_state(self, state):
+
+  def _consume(self, loc) 合并读缓冲区loc个字节
+
