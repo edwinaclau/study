@@ -1,0 +1,18 @@
+org.hibernate.connection 数据库连接池
+
+
+org.hibernate.jca
+
+
+
+org.hibernate.proxy Proxy 和 Lazy Loading
+
+org.hibernate.metadata 
+
+org.hibernate.mapping
+
+org.hibernate.sql.
+
+org.hibernate.transcaton 
+
+org.hibernate.util;

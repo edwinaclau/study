@@ -7,6 +7,7 @@ max_binlog_size、binlog_cache_size、sync_binlog、binlog-do-db、binlog-ignore
 --log-bin[=filename]
 
 
+
 STATEMENT
 
 每一条造成数据库影响都将SQL记录在内
