@@ -22,3 +22,6 @@ mybatis    SqlSessionFactory
 
            mapper
 
+简单来说就是 根据业务模型变动改变数据 
+
+           ORM 写的东西 可以用在多个数据库平台,
