@@ -25,3 +25,14 @@ mybatis    SqlSessionFactory
 简单来说就是 根据业务模型变动改变数据 
 
            ORM 写的东西 可以用在多个数据库平台,
+
+
+http://mybatis.github.io/mybatis-3/configuration.html#typeHandlers
+
+类型转换
+
+Type Handler   
+
+Java Types 
+
+JDBC Types 
