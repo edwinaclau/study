@@ -26,6 +26,8 @@ mkfs.ext2 -N 50000 -b  -I
 
 
 
+
+
 ps auxfww输出
 
 
