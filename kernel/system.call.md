@@ -20,7 +20,7 @@ PID
 系统调用，两个方式
 
 调用C库封装函数和普通函数
-
+调用C库封装函数和普通函数
 
 _syscall0(type,name)
 _syscall1

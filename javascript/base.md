@@ -12,4 +12,5 @@ obj instanceof Array 某些IE没有
    Array.isArray = function(arg){
          return Object.prototype.toString.call(arg)==="[object Array]"
     };  
+
  }
